@@ -39,10 +39,16 @@ exports.signup = catchAsync(async (req, res, next) => {
       passwordConfirm: req.body.passwordConfirm,
     },
   );
-  const url = `${process.env.WEBSITE_URL}/me`;
-  // console.log(url);
+  // حط كود الإيميل جوا try catch
+  try {
+    const url = `${req.protocol}://${req.get('host')}/me`;
+    await new Email(newUser, url).sendWelcome();
+  } catch (err) {
+    console.log('Email sending failed:', err);
+  }
 
-  await new Email(newUser, url).sendWelcome();
+  // كمل إرسال الـ Response والـ Cookie عادي
+  createSendToken(newUser, 201, res);
   createSendToken(newUser, 201, res);
 });
 exports.login = catchAsync(async (req, res, next) => {
