@@ -23,6 +23,7 @@
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
+    "@sendgrid/mail": "^8.1.6",
     "axios": "^0.21.4",
     "bcryptjs": "^3.0.3",
     "compression": "^1.8.1",
