@@ -1,22 +1,28 @@
 //- extends base
-//- //-(head) معناها انو المحتوى للبلوك راح ينحط في نهاية محتوى ال
-//- block append head 
+
+//- block append head
 //-     script(src='https://js.stripe.com/v3/')
+
 //- mixin overviewBox(label, text, icon)
 //-     .overview-box__detail
 //-         svg.overview-box__icon
 //-             use(xlink:href=`/img/icons.svg#icon-${icon}`)
-//-         span.overview-box__label=label
-//-         span.overview-box__text=text
+//-         span.overview-box__label= label
+//-         span.overview-box__text= text
+
 //- include _reviewCard
-//- block content 
+
+//- block content
 //-     section.section-header
 //-         .header__hero
 //-             .header__hero-overlay &nbsp;
 //-             img.header__hero-img(src=`/img/tours/${tour.imageCover}`, alt=tour.name)
+//-             .ridge
+//-                 svg(viewBox='0 0 1200 60' preserveAspectRatio='none')
+//-                     path(fill='#F5F7F1' d='M0 60 L0 34 L60 20 L140 42 L230 10 L320 38 L410 16 L500 44 L600 22 L700 46 L800 18 L900 40 L1000 14 L1100 38 L1200 24 L1200 60 Z')
 //-         .heading-box
-//-             h1.heading-primary
-//-                 span=`${tour.name} Tour`
+//-             span.heading-box__eyebrow= tour.difficulty + ' · ' + tour.duration + '-day tour'
+//-             h1.heading-primary= `${tour.name} Tour`
 //-             .heading-box__group
 //-                 .heading-box__detail
 //-                     svg.heading-box__icon
@@ -29,49 +35,46 @@
 
 //-     section.section-description
 //-         .overview-box
-//-             div
-//-                 .overview-box__group
-//-                     h2.heading-secondary.ma-bt-lg Quick facts
-//-                     - const date=tour.startDates[0].toLocaleString('en-us',{month:'long',year:'numeric'})
-//-                     +overviewBox('Next date', date, 'calendar')    
-//-                     +overviewBox('Difficulty', tour.difficulty, 'trending-up')    
-//-                     +overviewBox('Participants', `${tour.maxGroupSize} People`, 'user')    
-//-                     +overviewBox('Rating', `${tour.ratingsAverage} / 5`, 'star')    
-        
-//-                 .overview-box__group
-//-                     h2.heading-secondary.ma-bt-lg Your tour guides
+//-             .overview-box__group
+//-                 h2.heading-secondary.ma-bt-lg Quick facts
+//-                 - const date=tour.startDates[0].toLocaleString('en-us',{month:'long',year:'numeric'})
+//-                 +overviewBox('Next date', date, 'calendar')
+//-                 +overviewBox('Difficulty', tour.difficulty, 'trending-up')
+//-                 +overviewBox('Participants', `${tour.maxGroupSize} People`, 'user')
+//-                 +overviewBox('Rating', `${tour.ratingsAverage} / 5`, 'star')
 
-//-                     each guide in tour.guides
-//-                         .overview-box__detail
-//-                             img.overview-box__img(src=`/img/users/${guide.photo}`, alt=guide.name)
-//-                             - if(guide.role==='lead-guide')
-//-                                 span.overview-box__label Lead guide 
-//-                             - if(guide.role==='guide')
-//-                                 span.overview-box__label Tour guide
-//-                             span.overview-box__text #{guide.name}
-                    
+//-             .overview-box__group
+//-                 h2.heading-secondary.ma-bt-lg Your tour guides
+//-                 each guide in tour.guides
+//-                     .overview-box__detail
+//-                         img.overview-box__img(src=`/img/users/${guide.photo}`, alt=guide.name)
+//-                         if guide.role==='lead-guide'
+//-                             span.overview-box__label Lead guide
+//-                         if guide.role==='guide'
+//-                             span.overview-box__label Tour guide
+//-                         span.overview-box__text= guide.name
 
 //-         .description-box
 //-             h2.heading-secondary.ma-bt-lg= `About ${tour.name} tour`
-//-             -const paragraphs=tour.description.split('\n');
+//-             - const paragraphs=tour.description.split('\n');
 //-             each p in paragraphs
-//-                  p.description__text=p
-          
-        
+//-                 p.description__text= p
+
 //-     section.section-pictures
-//-         each img, i in tour.images 
+//-         each img, i in tour.images
 //-             .picture-box
-//-                 img.picture-box__img(src=`/img/tours/${img}`, alt=`${tour.name} ${i+1}`,class=`picture-box__img--${i+1}`)
-        
+//-                 img.picture-box__img(src=`/img/tours/${img}`, alt=`${tour.name} ${i+1}`, class=`picture-box__img--${i+1}`, loading='lazy')
 
 //-     section.section-map
+//-         h2.heading-secondary.ma-bt-lg.section-map__heading Route
 //-         #map(data-locations=`${JSON.stringify(tour.locations)}`)
 
 //-     section.section-reviews
+//-         h2.heading-secondary.ma-bt-lg.section-reviews__heading What explorers are saying
 //-         .reviews-wrapper
 //-             button.reviews__btn.reviews__btn--left(aria-label='Previous review') ‹
 //-             .reviews
-//-                 each review in tour.reviews 
+//-                 each review in tour.reviews
 //-                     +reviewCard(review)
 //-             button.reviews__btn.reviews__btn--right(aria-label='Next review') ›
 
@@ -83,11 +86,14 @@
 //-             img.cta__img.cta__img--2(src=`/img/tours/${tour.images[2]}`, alt='Tour picture')
 //-             .cta__content
 //-                 h2.heading-secondary What are you waiting for?
-//-                 p.cta__text=`${tour.duration} days. 1 adventure. Infinite memories. Make it yours today!`
+//-                 p.cta__text= `${tour.duration} days. 1 adventure. Infinite memories. Make it yours today!`
 //-                 if user
 //-                     button.btn.btn--green.span-all-rows#book-tour(data-tour-id=`${tour.id}`) Book tour now!
 //-                 else
-//-                     a.btn.btn--green.span-all-rows(href="/loginForm") Log in to book tour now!
+//-                     a.btn.btn--green.span-all-rows(href='/loginForm') Log in to book tour now!
+
+//- block append scripts
+//-     script(src='/js/reviewCarousel.js')
 extends base
 
 block append head

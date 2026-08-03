@@ -45,8 +45,8 @@ exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
 exports.getAllUsers = factory.getAll(User);
 exports.getUser = factory.getOne(User);
 exports.updateMe = catchAsync(async (req, res, next) => {
-  console.log(req.file);
-  console.log(req.body);
+  // console.log(req.file);
+  // console.log(req.body);
 
   //1)create error if the user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
@@ -59,7 +59,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   //2)filtered out wanted fildes names that are not allowed to be update
   const filteredBody = filterObj(req.body, 'name', 'email');
   if (req.file) filteredBody.photo = req.file.filename;
-  console.log(filteredBody);
+  // console.log(filteredBody);
 
   //3)update user document
   const updateUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {

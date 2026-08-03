@@ -40,7 +40,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     },
   );
   const url = `${process.env.WEBSITE_URL}/me`;
-  console.log(url);
+  // console.log(url);
 
   await new Email(newUser, url).sendWelcome();
   createSendToken(newUser, 201, res);
@@ -78,11 +78,11 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
-    console.log(token);
+    // console.log(token);
   } else if (req.cookies.jwt) {
     token = req.cookies.jwt;
   }
-  console.log(token);
+  // console.log(token);
 
   if (!token || !jwt) {
     return next(
@@ -125,7 +125,7 @@ exports.isLoggedIn = async (req, res, next) => {
       );
       // 3)check if user still exist
       const currentUser = await User.findById(decoded.id);
-      console.log(currentUser);
+      // console.log(currentUser);
 
       if (!currentUser) {
         return next(
@@ -228,7 +228,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user.id).select('+password');
   //2)Check if POSTed current password is correct
   if (!(await user.correctPassword(req.body.currentPassword, user.password))) {
-    console.log(req.body.currentPassword, user.password);
+    // console.log(req.body.currentPassword, user.password);
 
     return next(new AppError('Your current password is wrong', 401));
   }
