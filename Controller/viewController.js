@@ -66,3 +66,16 @@ exports.getSignupForm = (req, res) => {
     title: 'Create your account',
   });
 };
+exports.getManageTours = catchAsync(async (req, res, next) => {
+  const tours = await Tour.find();
+  res.status(200).render('manageTours', {
+    title: 'Manage tours',
+    tours,
+  });
+});
+exports.getNewTourForm = (req, res) => {
+  res.status(200).render('manageTourForm', {
+    title: 'New tour',
+    tour: null,
+  });
+};

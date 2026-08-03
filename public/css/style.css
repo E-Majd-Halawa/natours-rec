@@ -1197,3 +1197,182 @@ select:focus-visible {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+.error {
+  min-height: calc(100vh - 76px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px;
+  background: var(--bg);
+}
+
+.error__art {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(
+    120% 120% at 30% 20%,
+    #2c6144 0%,
+    #17331f 60%,
+    #0f2919 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 34px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.error__emoji {
+  font-size: 3rem;
+  line-height: 1;
+  filter: grayscale(0) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+}
+.error__ridge {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 30px;
+}
+.error__ridge path {
+  fill: var(--amber);
+  opacity: 0.85;
+}
+
+.error__content {
+  max-width: 460px;
+}
+.error__eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--moss);
+  margin-bottom: 10px;
+}
+.error__title {
+  font-size: clamp(1.6rem, 3.4vw, 2.2rem);
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.error__msg {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  margin-bottom: 30px;
+}
+.error__btn {
+  width: auto;
+  padding: 13px 30px;
+}
+/* ---------- ADMIN: Manage Tours table ---------- */
+.admin-view {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 50px 32px 90px;
+}
+.admin-view__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.admin-view__header .btn {
+  width: auto;
+  padding: 11px 22px;
+}
+.admin-table-wrap {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+.admin-table thead th {
+  text-align: left;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.admin-table tbody td {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+  font-size: 0.86rem;
+}
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.admin-table tbody tr:hover {
+  background: var(--bg);
+}
+.admin-table__thumb {
+  width: 56px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+}
+.admin-table__name {
+  display: block;
+  font-weight: 600;
+  color: var(--ink);
+}
+.admin-table__sub {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+.admin-table td.mono {
+  font-family: 'IBM Plex Mono', monospace;
+}
+.admin-table__actions {
+  display: flex;
+  gap: 6px;
+  white-space: nowrap;
+}
+.admin-icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+  transition: all 0.2s;
+}
+.admin-icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.admin-icon-btn:hover {
+  border-color: var(--pine);
+  color: var(--pine);
+}
+.admin-icon-btn--danger:hover {
+  border-color: #b24234;
+  color: #b24234;
+  background: rgba(178, 66, 52, 0.06);
+}
+.admin-icon-btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}

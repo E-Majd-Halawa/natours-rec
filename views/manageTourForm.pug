@@ -1,0 +1,80 @@
+extends base
+
+block content
+    main.main
+        .admin-view
+            .admin-view__header
+                h2.heading-secondary= tour ? 'Edit tour' : 'New tour'
+                a.btn.btn--small.btn--ghost(href='/manage-tours') ← Back to list
+
+            .admin-form-card
+                form.form#tourForm(data-tour-id=tour ? tour.id : '')
+                    .admin-form-grid
+                        .form__group
+                            label.form__label(for='name') Tour name
+                            input#name.form__input(type='text', name='name', minlength='10', maxlength='40', required, value=tour ? tour.name : '')
+
+                        .form__group
+                            label.form__label(for='summary') Short summary
+                            input#summary.form__input(type='text', name='summary', required, value=tour ? tour.summary : '')
+
+                        .form__group
+                            label.form__label(for='duration') Duration (days)
+                            input#duration.form__input(type='number', name='duration', min='1', required, value=tour ? tour.duration : '')
+
+                        .form__group
+                            label.form__label(for='maxGroupSize') Max group size
+                            input#maxGroupSize.form__input(type='number', name='maxGroupSize', min='1', required, value=tour ? tour.maxGroupSize : '')
+
+                        .form__group
+                            label.form__label(for='difficulty') Difficulty
+                            select#difficulty.form__input(name='difficulty', required)
+                                option(value='easy', selected=tour && tour.difficulty==='easy') Easy
+                                option(value='medium', selected=tour && tour.difficulty==='medium') Medium
+                                option(value='difficult', selected=tour && tour.difficulty==='difficult') Difficult
+
+                        .form__group
+                            label.form__label(for='startDate') First start date
+                            input#startDate.form__input(type='date', name='startDate', required=!tour)
+
+                        .form__group
+                            label.form__label(for='locationDescription') Location name
+                            input#locationDescription.form__input(type='text', name='locationDescription', placeholder='e.g. Miami, USA', required=!tour)
+
+                        .form__group
+                            label.form__label(for='lat') Latitude
+                            input#lat.form__input(type='number', name='lat', step='any', placeholder='25.7617', required=!tour)
+
+                        .form__group
+                            label.form__label(for='lng') Longitude
+                            input#lng.form__input(type='number', name='lng', step='any', placeholder='-80.1918', required=!tour)
+
+                        .form__group
+                            label.form__label(for='price') Price ($)
+                            input#price.form__input(type='number', name='price', min='0', required, value=tour ? tour.price : '')
+
+                        .form__group
+                            label.form__label(for='priceDiscount') Discount price ($, optional)
+                            input#priceDiscount.form__input(type='number', name='priceDiscount', min='0', value=tour && tour.priceDiscount ? tour.priceDiscount : '')
+
+                        .form__group.admin-form-grid__full
+                            label.form__label(for='description') Full description
+                            textarea#description.form__input(name='description', rows='6')= tour ? tour.description : ''
+
+                        if !tour
+                            .form__group.admin-form-grid__full
+                                label.form__label(for='imageCover') Cover image
+                                input#imageCover.form__input.form__input--file(type='file', name='imageCover', accept='image/*', required)
+                                p.form__hint JPG or PNG. It'll be resized automatically to fit the tour cards.
+
+                            .form__group.admin-form-grid__full
+                                label.form__label(for='images') Gallery photos (up to 3)
+                                input#images.form__input.form__input--file(type='file', name='images', accept='image/*', multiple)
+                                p.form__hint Optional. Used in the tour's photo gallery and closing banner. Select up to 3 images (Ctrl/Cmd+click to pick more than one).
+
+                    .form__group.right.admin-form-actions
+                        span#formStatus.admin-form-status
+                        button#createTourBtn.btn.btn--small.btn--green(type='button')= tour ? 'Save changes' : 'Create tour'
+
+block append scripts
+    script(src='/js/manageTourForm.js')

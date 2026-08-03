@@ -4,6 +4,12 @@ const authController = require('../Controller/authController');
 const bookingController = require('../Controller/bookingController');
 const router = express.Router();
 const Tour = require('../Models/tourModel');
+router.get(
+  '/manage-tours/new',
+  authController.protect,
+  authController.restrictTo('admin'),
+  viewController.getNewTourForm,
+);
 router.get('/signup', authController.isLoggedIn, viewController.getSignupForm);
 
 router.get(
@@ -28,5 +34,10 @@ router.post(
   authController.protect,
   viewController.upDateUserData,
 );
-
+router.get(
+  '/manage-tours',
+  authController.protect,
+  authController.restrictTo('admin'),
+  viewController.getManageTours,
+);
 module.exports = router;

@@ -1,0 +1,45 @@
+extends base
+
+block content
+    main.main
+        .admin-view
+            .admin-view__header
+                h2.heading-secondary Manage tours
+                a.btn.btn--small.btn--green(href='/manage-tours/new') + New tour
+            .admin-table-wrap
+                table.admin-table
+                    thead
+                        tr
+                            th
+                            th Name
+                            th Difficulty
+                            th Duration
+                            th Price
+                            th Rating
+                            th
+                    tbody
+                        each tour in tours
+                            tr(data-id=`${tour.id}`)
+                                td
+                                    img.admin-table__thumb(src=`/img/tours/${tour.imageCover}`, alt=tour.name)
+                                td
+                                    span.admin-table__name= tour.name
+                                    span.admin-table__sub= tour.startLocation.description
+                                td
+                                    span.badge(class=`diff-${tour.difficulty}`)= tour.difficulty
+                                td= `${tour.duration}d`
+                                td.mono= `$${tour.price}`
+                                td.mono= `${tour.ratingsAverage} (${tour.ratingsQuantity})`
+                                td.admin-table__actions
+                                    a.admin-icon-btn(href=`/tour/${tour.slug}`, title='View on site', target='_blank')
+                                        svg
+                                            use(xlink:href='/img/icons.svg#icon-map-pin')
+                                    a.admin-icon-btn(href=`/manage-tours/${tour.id}`, title='Edit')
+                                        svg
+                                            use(xlink:href='/img/icons.svg#icon-settings')
+                                    button.admin-icon-btn.admin-icon-btn--danger(type='button', title='Delete', data-delete-id=`${tour.id}`, data-delete-name=`${tour.name}`)
+                                        svg(viewBox='0 0 24 24' fill='none')
+                                            path(stroke='currentColor' stroke-width='2' d='M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m2 0-1 13a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2L7 7')
+
+block append scripts
+    script(src='/js/manageTours.js')

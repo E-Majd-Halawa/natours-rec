@@ -1,8 +1,14 @@
 extends base
+
 block content
     main.main
-    .error
-        .error__title
-        h2.heading-secondary.heading-secondary--error Uh oh! Something went wrong!   
-        h2.error__emoji 😢 🤯
-        .error__msg=msg
+        .error
+            .error__art
+                span.error__emoji 🧭
+                svg.error__ridge(viewBox='0 0 700 60' preserveAspectRatio='none')
+                    path(d='M0,40 C120,10 220,60 350,30 C480,0 580,50 700,20 L700,60 L0,60 Z')
+            .error__content
+                p.error__eyebrow.mono Error
+                h2.heading-secondary.error__title Uh oh! Something went wrong
+                p.error__msg= msg
+                a.btn.btn--green.error__btn(href='/') Back to home

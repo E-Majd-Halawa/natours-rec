@@ -33,10 +33,12 @@ router
 router.route('/distances/:latlng/unit/:unit').get(tourController.getDistance);
 //tours-distance?distance=223&center=-40,45&unit=mi
 //tours-distance/223/center/-40,45/unit/mi
+router;
 router
   .route('/')
   .get(tourController.getAllTours)
   .post(
+    authController.protect,
     authController.restrictTo('admin', 'lead-guide'),
     tourController.creatTour,
   );

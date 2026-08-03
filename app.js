@@ -31,6 +31,7 @@ app.use(
         scriptSrc: ["'self'", 'https://unpkg.com', 'https://js.stripe.com'],
         styleSrc: [
           "'self'",
+          "'unsafe-inline'",
           'https://unpkg.com',
           'https://fonts.googleapis.com',
         ],
@@ -40,6 +41,9 @@ app.use(
           'https://*.openstreetmap.org',
           'https://unpkg.com',
           'https://api.stripe.com',
+          ...(process.env.NODE_ENV === 'development'
+            ? ['ws://localhost:1234', 'ws://127.0.0.1:1234']
+            : []),
         ],
         frameSrc: [
           "'self'",
