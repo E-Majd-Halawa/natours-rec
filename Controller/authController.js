@@ -11,13 +11,12 @@ const signToken = (id) => {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
-  const cookieOptions = {
+  res.cookie('jwt', token, {
     httpOnly: true,
-  };
-
-  res.cookie('jwt', token, cookieOptions);
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+  });
   //remove the passwor from the output
   user.password = undefined;
   res.status(statusCode).json({
@@ -48,8 +47,8 @@ exports.signup = catchAsync(async (req, res, next) => {
   }
 
   // كمل إرسال الـ Response والـ Cookie عادي
-  createSendToken(newUser, 201, res);
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
+  createSendToken(newUser, 201, req, res);
 });
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
@@ -120,6 +119,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   res.locals.user = currentUser;
   next();
 });
+
 //only for rendered pages ,no errors!
 exports.isLoggedIn = async (req, res, next) => {
   // 1)Gitting token and check if it's there
@@ -245,5 +245,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   user.passwordResetExpires = undefined;
   await user.save();
   //4)log user in , send JWT
-  createSendToken(user, 201, res);
+  createSendToken(user, 201, req, res);
 });
