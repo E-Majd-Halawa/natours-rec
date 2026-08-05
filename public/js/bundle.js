@@ -36,11 +36,11 @@ const $567099f3ebcb8bdf$export$4c5dd147b21b9176 = (mapEl)=>{
     const el = document.querySelector('.alert');
     if (el) el.parentElement.removeChild(el);
 };
-const $9872a30d54cb2189$export$de026b00723010c1 = (type, msg)=>{
+const $9872a30d54cb2189$export$de026b00723010c1 = (type, msg, time = 5)=>{
     $9872a30d54cb2189$export$516836c6a9dfc573();
     const markup = `<div class="alert alert--${type}">${msg}</div>`;
     document.querySelector('body').insertAdjacentHTML('afterbegin', markup);
-    window.setTimeout($9872a30d54cb2189$export$516836c6a9dfc573, 5000);
+    window.setTimeout($9872a30d54cb2189$export$516836c6a9dfc573, time * 1000);
 };
 
 
@@ -136,6 +136,7 @@ const $57c58b919921038b$export$7200a869094fec36 = async (name, email, password, 
                 passwordConfirm: passwordConfirm
             }
         });
+        console.log('Signup Response:', res.data);
         if (res.data.status === 'success') {
             (0, $9872a30d54cb2189$export$de026b00723010c1)('success', 'Account created successfully!');
             window.setTimeout(()=>{
@@ -143,9 +144,11 @@ const $57c58b919921038b$export$7200a869094fec36 = async (name, email, password, 
             }, 1500);
         }
     } catch (err) {
+        console.error('Signup Error:', err.response ? err.response.data : err);
         (0, $9872a30d54cb2189$export$de026b00723010c1)('error', err.response.data.message);
     }
 };
+
 
 
 //DOM
@@ -224,5 +227,7 @@ if ($e18016dbdc1c1791$var$signupForm) $e18016dbdc1c1791$var$signupForm.addEventL
     const passwordConfirm = document.getElementById('passwordConfirm').value;
     (0, $57c58b919921038b$export$7200a869094fec36)(name, email, password, passwordConfirm);
 });
+const $e18016dbdc1c1791$var$alertMessage = document.querySelector('body').dataset.alert;
+if (aler) (0, $9872a30d54cb2189$export$de026b00723010c1)('success', $e18016dbdc1c1791$var$alertMessage, 20);
 
 
