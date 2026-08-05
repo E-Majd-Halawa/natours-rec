@@ -1,47 +1,51 @@
 const express = require('express');
 const authController = require('../Controller/authController');
 const userController = require('../Controller/userController');
-const reviewcontroller = require('../Controller/reviewController');
-const { route } = require('./reviewRoutes');
+
 const router = express.Router();
-router.route('/signup').post(authController.signup);
-router.route('/login').post(authController.login);
-router.route('/forgetPassword').post(authController.forgetPassword);
-router.route('/resetPassword/:token').patch(authController.resetPassword);
 
-router
-  .route('/updatePassword')
-  .patch(authController.protect, authController.updatePassword);
-router.route('/me').get(
-  authController.protect,
+// --------------------------------------------------
+// 1) Public Routes (مسارات عامة للجميع)
+// --------------------------------------------------
+router.post('/signup', authController.signup);
+router.post('/login', authController.login);
+router.post('/forgetPassword', authController.forgetPassword);
+router.patch('/resetPassword/:token', authController.resetPassword);
 
-  userController.getMe,
-  userController.getUser,
+// --------------------------------------------------
+// 2) Protected Routes (تتطلب تسجيل دخول فقط)
+// --------------------------------------------------
+// هذا السطر يحمي جميع المسارات المعرفة بعده تلقائياً دون الحاجة لتكرار authController.protect
+router.use(authController.protect);
+
+router.patch('/updatePassword', authController.updatePassword);
+
+router.get('/me', userController.getMe, userController.getUser);
+
+router.patch(
+  '/updateMe',
+  userController.uploadUserPhoto,
+  userController.resizeUserPhoto,
+  userController.updateMe,
 );
-router
-  .route('/updateMe')
-  .patch(
-    authController.protect,
-    userController.uploadUserPhoto,
-    userController.resizeUserPhoto,
-    userController.updateMe,
-  );
-router
-  .route('/deleteMe')
-  .delete(authController.protect, userController.deleteMe);
+
+router.delete('/deleteMe', userController.deleteMe);
+
+// --------------------------------------------------
+// 3) Admin Only Routes (خاصة بالأدمن فقط)
+// --------------------------------------------------
+// هذا السطر يمنع أي مستخدم عادي من الوصول للمسارات أدناه
+router.use(authController.restrictTo('admin'));
+
 router
   .route('/')
-  .get(authController.protect, userController.getAllUsers)
+  .get(userController.getAllUsers)
   .post(userController.creatUser);
+
 router
-  .route(`/:id`)
+  .route('/:id')
   .get(userController.getUser)
   .patch(userController.updateUser)
-  .delete(
-    authController.protect,
-    authController.restrictTo('admin'),
-    userController.deleteUser,
-  );
-router.post('/signup', authController.signup);
+  .delete(userController.deleteUser);
 
 module.exports = router;
