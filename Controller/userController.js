@@ -32,14 +32,29 @@ const filterObj = (Obj, ...allowedFileds) => {
   });
   return newObj;
 };
+// exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
+//   if (!req.file) return next();
+//   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+//   await sharp(req.file.buffer)
+//     .resize(500, 500)
+//     .toFormat('jpeg')
+//     .jpeg({ quality: 90 })
+//     .toFile(`public/img/users/${req.file.filename}`);
+//   next();
+// });
 exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
-  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
-  await sharp(req.file.buffer)
+
+  // 1) معالجة الصورة في الذاكرة والحصول على Buffer
+  const imageBuffer = await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
-    .toFile(`public/img/users/${req.file.filename}`);
+    .toBuffer();
+
+  // 2) تحويل الـ Buffer إلى نص Base64 وتخزينه
+  req.file.filename = `data:image/jpeg;base64,${imageBuffer.toString('base64')}`;
+
   next();
 });
 exports.getAllUsers = factory.getAll(User);
