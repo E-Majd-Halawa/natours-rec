@@ -4,7 +4,7 @@ const authController = require('../Controller/authController');
 const bookingController = require('../Controller/bookingController');
 const Tour = require('../Models/tourModel');
 const router = express.Router();
-app.use(viewController.alerts);
+router.use(viewController.alerts);
 router.get(
   '/manage-tours/new',
   authController.protect,
