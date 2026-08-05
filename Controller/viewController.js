@@ -135,3 +135,15 @@ exports.getMyReviews = catchAsync(async (req, res, next) => {
     reviews,
   });
 });
+exports.getBilling = catchAsync(async (req, res, next) => {
+  // جلب الفواتير والحجوزات للمستخدم الحالي مع بيانات الجولة
+  const bookings = await Booking.find({ user: req.user.id }).populate({
+    path: 'tour',
+    select: 'name',
+  });
+
+  res.status(200).render('billing', {
+    title: 'Billing History',
+    bookings,
+  });
+});
