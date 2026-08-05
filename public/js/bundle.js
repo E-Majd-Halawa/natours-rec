@@ -307,5 +307,23 @@ if ($e18016dbdc1c1791$var$tableBookings) $e18016dbdc1c1791$var$tableBookings.add
         }
     }
 });
+const $e18016dbdc1c1791$var$userReviewsTable = document.querySelector('.table-reviews');
+if ($e18016dbdc1c1791$var$userReviewsTable) $e18016dbdc1c1791$var$userReviewsTable.addEventListener('click', async (e)=>{
+    if (e.target.classList.contains('btn--delete-user-review')) {
+        const reviewId = e.target.dataset.reviewId;
+        if (confirm('Are you sure you want to delete your review?')) try {
+            const res = await (0, ($parcel$interopDefault($jANz3$axios)))({
+                method: 'DELETE',
+                url: `/api/v1/reviews/${reviewId}`
+            });
+            if (res.status === 204) {
+                (0, $9872a30d54cb2189$export$de026b00723010c1)('success', 'Your review was deleted successfully!');
+                e.target.closest('tr').remove();
+            }
+        } catch (err) {
+            (0, $9872a30d54cb2189$export$de026b00723010c1)('error', err.response?.data?.message || 'Error deleting review!');
+        }
+    }
+});
 
 

@@ -855,6 +855,24 @@ if (tableBookings) tableBookings.addEventListener('click', async (e)=>{
         }
     }
 });
+const userReviewsTable = document.querySelector('.table-reviews');
+if (userReviewsTable) userReviewsTable.addEventListener('click', async (e)=>{
+    if (e.target.classList.contains('btn--delete-user-review')) {
+        const reviewId = e.target.dataset.reviewId;
+        if (confirm('Are you sure you want to delete your review?')) try {
+            const res = await (0, _axiosDefault.default)({
+                method: 'DELETE',
+                url: `/api/v1/reviews/${reviewId}`
+            });
+            if (res.status === 204) {
+                (0, _alerts.showAlert)('success', 'Your review was deleted successfully!');
+                e.target.closest('tr').remove();
+            }
+        } catch (err) {
+            (0, _alerts.showAlert)('error', err.response?.data?.message || 'Error deleting review!');
+        }
+    }
+});
 
 },{"./mapbox":"3NDmA","./login":"atXZs","./updateSettings":"4mZ6r","./stripe":"8yDJi","./signup":"dQoq3","./alerts":"a1Hbh","./manageUsers":"7AT9P","axios":"jNCqL","@parcel/transformer-js/src/esmodule-helpers.js":"90RNB"}],"3NDmA":[function(require,module,exports,__globalThis) {
 /* eslint-disable */ // const mapEl = document.getElementById('map');

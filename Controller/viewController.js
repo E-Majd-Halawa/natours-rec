@@ -122,3 +122,16 @@ exports.getManageBookings = catchAsync(async (req, res, next) => {
     bookings,
   });
 });
+exports.getMyReviews = catchAsync(async (req, res, next) => {
+  // 1) جلب المراجعات الخاصة بالمستخدم الحالي فقط مع بيانات الرحلة
+  const reviews = await Review.find({ user: req.user.id }).populate({
+    path: 'tour',
+    select: 'name',
+  });
+
+  // 2) عرض الصفحة
+  res.status(200).render('myReviews', {
+    title: 'My Reviews',
+    reviews,
+  });
+});
