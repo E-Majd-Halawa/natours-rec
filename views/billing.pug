@@ -16,7 +16,7 @@ block content
           +navItem('/my-tours', 'My bookings', 'briefcase')
           +navItem('/my-reviews', 'My reviews', 'star')
           +navItem('/billing', 'Billing', 'credit-card', true)
-        if user.role === 'admin'
+        if user && user.role === 'admin'
           .admin-nav
             h5.admin-nav__heading Admin
             ul.side-nav
@@ -26,70 +26,47 @@ block content
               +navItem('/manage-bookings', 'Manage bookings', 'briefcase')
 
       .user-view__content
-        .billing-dashboard
+        .billing-container
           .billing-header
-            h2.heading-secondary Billing & Payment History
-            p.billing-subtitle Track your payments, view invoices, and manage your tour transactions.
+            h2.heading-secondary Billing & Invoices
+            p.billing-subtitle Manage your tour transaction history and download receipts.
 
-          // --- 1. كروت الملخص المالي (Stats Cards) ---
           - const totalSpent = bookings ? bookings.reduce((sum, b) => sum + (b.price || 0), 0) : 0
-          - const paidCount = bookings ? bookings.filter(b => b.paid !== false).length : 0
 
-          .billing-stats
-            .stat-card
-              .stat-card__icon.stat-card__icon--green
-                svg
-                  use(xlink:href='/img/icons.svg#icon-credit-card')
-              .stat-card__info
-                span.stat-card__label Total Spent
-                h3.stat-card__value `$${totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+          // --- 1. Metrics Bar ---
+          .billing-metrics
+            .metric-box
+              span.metric-box__label Total Spent
+              span.metric-box__value= `$${totalSpent.toFixed(2)}`
+            .metric-box
+              span.metric-box__label Invoices Issued
+              span.metric-box__value= bookings ? bookings.length : 0
 
-            .stat-card
-              .stat-card__icon.stat-card__icon--blue
-                svg
-                  use(xlink:href='/img/icons.svg#icon-briefcase')
-              .stat-card__info
-                span.stat-card__label Total Invoices
-                h3.stat-card__value= bookings ? bookings.length : 0
+          // --- 2. Minimalist History List ---
+          .billing-section
+            h3.billing-section__title Transaction History
 
-            .stat-card
-              .stat-card__icon.stat-card__icon--star
-                svg
-                  use(xlink:href='/img/icons.svg#icon-star')
-              .stat-card__info
-                span.stat-card__label Paid Orders
-                h3.stat-card__value= paidCount
-
-          // --- 2. جدول الفواتير الحديث (Modern Table) ---
-          if !bookings || bookings.length === 0
-            .billing-empty
-              p.no-data No billing records found yet.
-          else
-            .table-container
-              table.modern-table
-                thead
-                  tr
-                    th Invoice ID
-                    th Tour Item
-                    th Payment Date
-                    th Amount
-                    th Status
-                    th Action
-                tbody
-                  each booking, i in bookings
-                    tr
-                      td.font-mono
-                        span.invoice-tag= `#INV-${new Date(booking.createdAt).getFullYear()}-${(i + 1).toString().padStart(3, '0')}`
-                      td.tour-cell
-                        .tour-name= booking.tour ? booking.tour.name : 'Custom Tour Package'
-                      td.date-cell
-                        = new Date(booking.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                      td.amount-cell
-                        span.price-amount `$${booking.price}`
-                      td
-                        if booking.paid !== false
-                          span.badge.badge--paid Paid
-                        else
-                          span.badge.badge--pending Pending
-                      td
-                        button.btn-action(onclick="window.print()") Receipt
+            if !bookings || bookings.length === 0
+              p.no-data No billing history found.
+            else
+              .billing-list
+                each booking, i in bookings
+                  .billing-row
+                    .billing-row__info
+                      h4.billing-row__title= booking.tour ? booking.tour.name : 'Tour Booking'
+                      .billing-row__meta
+                        span.invoice-id= `#INV-${new Date(booking.createdAt).getFullYear()}-${(i + 1).toString().padStart(3, '0')}`
+                        span.meta-dot •
+                        span.payment-date= new Date(booking.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    
+                    .billing-row__status
+                      if booking.paid !== false
+                        span.status-pill.status-pill--paid Paid
+                      else
+                        span.status-pill.status-pill--pending Pending
+                    
+                    .billing-row__amount
+                      span.amount-text= `$${booking.price.toFixed(2)}`
+                    
+                    .billing-row__action
+                      button.btn-receipt(onclick="window.print()") Receipt
