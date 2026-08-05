@@ -1,108 +1,106 @@
 extends base
 
 block append head
-    // مكتبة Leaflet لتحديد الموقع على الخريطة مباشرة
-    link(rel='stylesheet', href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css')
-    script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js')
+  // تضمين مكتبة الخرائط Leaflet ورابط الـ CSS الخاص بها
+  link(rel='stylesheet', href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css')
+  script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js')
 
 block content
-    main.main
-        .admin-view
-            .admin-view__header
-                h2.heading-secondary= tour ? 'Edit tour' : 'New tour'
-                a.btn.btn--small.btn--ghost(href='/manage-tours') ← Back to list
+  main.main
+    .admin-view
+      .admin-view__header
+        h2.heading-secondary= tour ? 'Edit Tour' : 'Create New Tour'
+        a.btn.btn--small.btn--ghost(href='/manage-tours') ← Back to list
 
-            .admin-form-card
-                form.form#tourForm(data-tour-id=tour ? tour.id : '')
-                    .admin-form-grid
-                        // Basic Details
-                        .form__group
-                            label.form__label(for='name') Tour name
-                            input#name.form__input(type='text', name='name', minlength='10', maxlength='40', required, value=tour ? tour.name : '')
+      .admin-form-card
+        form.form#tourForm(data-tour-id=tour ? tour.id : '')
+          .admin-form-grid
+            // --- Basic Details ---
+            .form__group
+              label.form__label(for='name') Tour Name
+              input#name.form__input(type='text', name='name', minlength='10', maxlength='40', required, value=tour ? tour.name : '')
 
-                        .form__group
-                            label.form__label(for='summary') Short summary
-                            input#summary.form__input(type='text', name='summary', required, value=tour ? tour.summary : '')
+            .form__group
+              label.form__label(for='summary') Summary
+              input#summary.form__input(type='text', name='summary', required, value=tour ? tour.summary : '')
 
-                        .form__group
-                            label.form__label(for='duration') Duration (days)
-                            input#duration.form__input(type='number', name='duration', min='1', required, value=tour ? tour.duration : '')
+            .form__group
+              label.form__label(for='duration') Duration (Days)
+              input#duration.form__input(type='number', name='duration', min='1', required, value=tour ? tour.duration : '')
 
-                        .form__group
-                            label.form__label(for='maxGroupSize') Max group size
-                            input#maxGroupSize.form__input(type='number', name='maxGroupSize', min='1', required, value=tour ? tour.maxGroupSize : '')
+            .form__group
+              label.form__label(for='maxGroupSize') Max Group Size
+              input#maxGroupSize.form__input(type='number', name='maxGroupSize', min='1', required, value=tour ? tour.maxGroupSize : '')
 
-                        .form__group
-                            label.form__label(for='difficulty') Difficulty
-                            select#difficulty.form__input(name='difficulty', required)
-                                option(value='easy', selected=tour && tour.difficulty==='easy') Easy
-                                option(value='medium', selected=tour && tour.difficulty==='medium') Medium
-                                option(value='difficult', selected=tour && tour.difficulty==='difficult') Difficult
+            .form__group
+              label.form__label(for='difficulty') Difficulty
+              select#difficulty.form__input(name='difficulty', required)
+                option(value='easy', selected=tour && tour.difficulty==='easy') Easy
+                option(value='medium', selected=tour && tour.difficulty==='medium') Medium
+                option(value='difficult', selected=tour && tour.difficulty==='difficult') Difficult
 
-                        .form__group
-                            label.form__label(for='startDate') First start date
-                            - const startDateVal = tour && tour.startDates && tour.startDates[0] ? new Date(tour.startDates[0]).toISOString().split('T')[0] : ''
-                            input#startDate.form__input(type='date', name='startDate', required=!tour, value=startDateVal)
+            .form__group
+              label.form__label(for='startDate') First Start Date
+              - const startDateVal = tour && tour.startDates && tour.startDates[0] ? new Date(tour.startDates[0]).toISOString().split('T')[0] : ''
+              input#startDate.form__input(type='date', name='startDate', required=!tour, value=startDateVal)
 
-                        .form__group
-                            label.form__label(for='price') Price ($)
-                            input#price.form__input(type='number', name='price', min='0', required, value=tour ? tour.price : '')
+            .form__group
+              label.form__label(for='price') Price ($)
+              input#price.form__input(type='number', name='price', min='0', required, value=tour ? tour.price : '')
 
-                        .form__group
-                            label.form__label(for='priceDiscount') Discount price ($, optional)
-                            input#priceDiscount.form__input(type='number', name='priceDiscount', min='0', value=tour && tour.priceDiscount ? tour.priceDiscount : '')
+            .form__group
+              label.form__label(for='priceDiscount') Price Discount ($)
+              input#priceDiscount.form__input(type='number', name='priceDiscount', min='0', value=tour && tour.priceDiscount ? tour.priceDiscount : '')
 
-                        // --- 1. قسم المرشدين (Tour Guides Selection) ---
-                        .form__group.admin-form-grid__full
-                            label.form__label(for='guides') Tour Guides (Hold Ctrl / Cmd to select multiple)
-                            select#guides.form__input(name='guides', multiple, style='height: 110px;')
-                                if allGuides
-                                    each guide in allGuides
-                                        - const isSelected = tour && tour.guides && tour.guides.some(g => (g._id || g).toString() === guide.id.toString())
-                                        option(value=guide.id, selected=isSelected)= `${guide.name} (${guide.role})`
+            // --- Tour Guides Selection ---
+            .form__group.admin-form-grid__full
+              label.form__label(for='guides') Select Guides (Hold Ctrl / Cmd to select multiple)
+              select#guides.form__input(name='guides', multiple, style='height: 120px; padding: 8px;')
+                if allGuides
+                  each guide in allGuides
+                    - const isSelected = tour && tour.guides && tour.guides.some(g => (g._id || g).toString() === guide.id.toString())
+                    option(value=guide.id, selected=isSelected)= `${guide.name} — (${guide.role})`
 
-                        // --- 2. قسم الخريطة والموقع الجغرافي ---
-                        .form__group.admin-form-grid__full
-                            h3.heading-tertiary Location & Map Setup
-                            p.form__hint Click anywhere on the map below to set Latitude & Longitude automatically.
+            // --- Location & Map ---
+            .form__group.admin-form-grid__full
+              h3.heading-tertiary Location & Map Coordinate Setup
+              p.form__hint Click on the map to place a pin and set exact coordinates automatically.
 
-                        .form__group
-                            label.form__label(for='locationDescription') Location Name / Address
-                            - const locDesc = tour && tour.startLocation ? tour.startLocation.description : ''
-                            input#locationDescription.form__input(type='text', name='locationDescription', placeholder='e.g. Miami, USA', required=!tour, value=locDesc)
+            .form__group
+              label.form__label(for='locationDescription') Location Name / City
+              - const locDesc = tour && tour.startLocation ? tour.startLocation.description : ''
+              input#locationDescription.form__input(type='text', name='locationDescription', placeholder='e.g. Banff, Canada', required=!tour, value=locDesc)
 
-                        .form__group
-                            label.form__label(for='lat') Latitude
-                            - const latVal = tour && tour.startLocation && tour.startLocation.coordinates ? tour.startLocation.coordinates[1] : ''
-                            input#lat.form__input(type='number', name='lat', step='any', placeholder='25.7617', required=!tour, value=latVal)
+            .form__group
+              label.form__label(for='lat') Latitude
+              - const latVal = tour && tour.startLocation && tour.startLocation.coordinates ? tour.startLocation.coordinates[1] : ''
+              input#lat.form__input(type='number', name='lat', step='any', placeholder='51.1784', required=!tour, value=latVal)
 
-                        .form__group
-                            label.form__label(for='lng') Longitude
-                            - const lngVal = tour && tour.startLocation && tour.startLocation.coordinates ? tour.startLocation.coordinates[0] : ''
-                            input#lng.form__input(type='number', name='lng', step='any', placeholder='-80.1918', required=!tour, value=lngVal)
+            .form__group
+              label.form__label(for='lng') Longitude
+              - const lngVal = tour && tour.startLocation && tour.startLocation.coordinates ? tour.startLocation.coordinates[0] : ''
+              input#lng.form__input(type='number', name='lng', step='any', placeholder='-115.5708', required=!tour, value=lngVal)
 
-                        // حاوية الخريطة للتحديد التفاعلي
-                        .form__group.admin-form-grid__full
-                            #adminMap(style='height: 300px; border-radius: 9px; border: 1px solid #cbd5e1; margin-top: 1rem;')
+            // حاوية الخريطة مع تحديد زاوية الرؤية والارتفاع الصريح
+            .form__group.admin-form-grid__full
+              #adminMap(style='height: 350px; width: 100%; border-radius: 8px; border: 2px solid #e2e8f0; margin-top: 10px; z-index: 1;')
 
-                        // Descriptions & Media
-                        .form__group.admin-form-grid__full
-                            label.form__label(for='description') Full description
-                            textarea#description.form__input(name='description', rows='5')= tour ? tour.description : ''
+            // --- Media & Descriptions ---
+            .form__group.admin-form-grid__full
+              label.form__label(for='description') Full Tour Description
+              textarea#description.form__input(name='description', rows='5')= tour ? tour.description : ''
 
-                        if !tour
-                            .form__group.admin-form-grid__full
-                                label.form__label(for='imageCover') Cover image
-                                input#imageCover.form__input.form__input--file(type='file', name='imageCover', accept='image/*', required)
-                                p.form__hint JPG or PNG. It'll be resized automatically.
+            .form__group.admin-form-grid__full
+              label.form__label(for='imageCover') Cover Image #{tour ? '(Optional when editing)' : ''}
+              input#imageCover.form__input.form__input--file(type='file', name='imageCover', accept='image/*', required=!tour)
 
-                            .form__group.admin-form-grid__full
-                                label.form__label(for='images') Gallery photos (up to 3)
-                                input#images.form__input.form__input--file(type='file', name='images', accept='image/*', multiple)
+            .form__group.admin-form-grid__full
+              label.form__label(for='images') Gallery Images (up to 3)
+              input#images.form__input.form__input--file(type='file', name='images', accept='image/*', multiple)
 
-                    .form__group.right.admin-form-actions(style='margin-top: 2rem;')
-                        span#formStatus.admin-form-status
-                        button#createTourBtn.btn.btn--small.btn--green(type='submit')= tour ? 'Save changes' : 'Create tour'
+          .form__group.right.admin-form-actions(style='margin-top: 2rem;')
+            button#submitBtn.btn.btn--medium.btn--green(type='submit')= tour ? 'Save Changes' : 'Create Tour'
 
 block append scripts
-    script(src='/js/manageTourForm.js')
+  script(src='https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js')
+  script(src='/js/manageTourForm.js')
