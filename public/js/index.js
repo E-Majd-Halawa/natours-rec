@@ -5,7 +5,28 @@ import { updateSettings } from './updateSettings';
 import { bookTour } from './stripe';
 import { signup } from './signup';
 import { showAlert } from './alerts';
+import { deleteUser } from './manageUsers';
 
+// 1. تحديد الجدول
+const usersTable = document.querySelector('.table-users');
+
+if (usersTable) {
+  usersTable.addEventListener('click', (e) => {
+    // 2. التحقق مما إذا كان العنصر المخطوط هو زر الحذف
+    const deleteBtn = e.target.closest('.btn--delete-user');
+
+    if (deleteBtn) {
+      // جلب ID المستخدم من data-user-id
+      const userId = deleteBtn.dataset.userId;
+      const userRow = deleteBtn.closest('tr');
+
+      // رسالة تأكيد قبل الحذف
+      if (confirm('Are you sure you want to delete this user?')) {
+        deleteUser(userId, userRow);
+      }
+    }
+  });
+}
 //DOM
 const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form--login');

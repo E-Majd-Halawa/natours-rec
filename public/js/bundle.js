@@ -98,6 +98,10 @@ const $677963a1596aa7ea$export$f558026a994b6051 = async (data, type)=>{
         const resData = await res.json();
         if (!res.ok) throw new Error(resData.message || 'Something went wrong');
         (0, $9872a30d54cb2189$export$de026b00723010c1)('success', `${type.toUpperCase()} was successfully updated`);
+        // إعطاء مهلة 1.5 ثانية ليقرأ المستخدم التنبيه ثم تحديث الصفحة لرؤية الصورة الجديدة
+        window.setTimeout(()=>{
+            location.reload(true);
+        }, 1500);
     } catch (err) {
         (0, $9872a30d54cb2189$export$de026b00723010c1)('error', err.message);
     }
@@ -151,6 +155,39 @@ const $57c58b919921038b$export$7200a869094fec36 = async (name, email, password, 
 
 
 
+
+
+const $f25c14890e575cd8$export$7d0f10f273c0438a = async (userId, userRow)=>{
+    try {
+        const res = await (0, ($parcel$interopDefault($jANz3$axios)))({
+            method: 'DELETE',
+            url: `/api/v1/users/${userId}`
+        });
+        // كود 204 يعني تم الحذف بنجاح (No Content)
+        if (res.status === 204 || res.data.status === 'success') {
+            (0, $9872a30d54cb2189$export$de026b00723010c1)('success', 'User deleted successfully!');
+            // إزالة السطر من جدول البيانات مباشرة
+            if (userRow) userRow.remove();
+        }
+    } catch (err) {
+        (0, $9872a30d54cb2189$export$de026b00723010c1)('error', err.response?.data?.message || 'Failed to delete user');
+    }
+};
+
+
+// 1. تحديد الجدول
+const $e18016dbdc1c1791$var$usersTable = document.querySelector('.table-users');
+if ($e18016dbdc1c1791$var$usersTable) $e18016dbdc1c1791$var$usersTable.addEventListener('click', (e)=>{
+    // 2. التحقق مما إذا كان العنصر المخطوط هو زر الحذف
+    const deleteBtn = e.target.closest('.btn--delete-user');
+    if (deleteBtn) {
+        // جلب ID المستخدم من data-user-id
+        const userId = deleteBtn.dataset.userId;
+        const userRow = deleteBtn.closest('tr');
+        // رسالة تأكيد قبل الحذف
+        if (confirm('Are you sure you want to delete this user?')) (0, $f25c14890e575cd8$export$7d0f10f273c0438a)(userId, userRow);
+    }
+});
 //DOM
 const $e18016dbdc1c1791$var$mapBox = document.getElementById('map');
 const $e18016dbdc1c1791$var$loginForm = document.querySelector('.form--login');

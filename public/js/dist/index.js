@@ -720,6 +720,20 @@ var _updateSettings = require("./updateSettings");
 var _stripe = require("./stripe");
 var _signup = require("./signup");
 var _alerts = require("./alerts");
+var _manageUsers = require("./manageUsers");
+// 1. تحديد الجدول
+const usersTable = document.querySelector('.table-users');
+if (usersTable) usersTable.addEventListener('click', (e)=>{
+    // 2. التحقق مما إذا كان العنصر المخطوط هو زر الحذف
+    const deleteBtn = e.target.closest('.btn--delete-user');
+    if (deleteBtn) {
+        // جلب ID المستخدم من data-user-id
+        const userId = deleteBtn.dataset.userId;
+        const userRow = deleteBtn.closest('tr');
+        // رسالة تأكيد قبل الحذف
+        if (confirm('Are you sure you want to delete this user?')) (0, _manageUsers.deleteUser)(userId, userRow);
+    }
+});
 //DOM
 const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form--login');
@@ -799,7 +813,7 @@ if (signupForm) signupForm.addEventListener('submit', (e)=>{
 const alertMessage = document.querySelector('body').dataset.alert;
 if (alertMessage) (0, _alerts.showAlert)('success', alertMessage, 20);
 
-},{"./mapbox":"3NDmA","./login":"atXZs","./updateSettings":"4mZ6r","./stripe":"8yDJi","./signup":"dQoq3","./alerts":"a1Hbh"}],"3NDmA":[function(require,module,exports,__globalThis) {
+},{"./mapbox":"3NDmA","./login":"atXZs","./updateSettings":"4mZ6r","./stripe":"8yDJi","./signup":"dQoq3","./alerts":"a1Hbh","./manageUsers":"7AT9P"}],"3NDmA":[function(require,module,exports,__globalThis) {
 /* eslint-disable */ // const mapEl = document.getElementById('map');
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -939,6 +953,10 @@ const updateSettings = async (data, type)=>{
         const resData = await res.json();
         if (!res.ok) throw new Error(resData.message || 'Something went wrong');
         (0, _alerts.showAlert)('success', `${type.toUpperCase()} was successfully updated`);
+        // إعطاء مهلة 1.5 ثانية ليقرأ المستخدم التنبيه ثم تحديث الصفحة لرؤية الصورة الجديدة
+        window.setTimeout(()=>{
+            location.reload(true);
+        }, 1500);
     } catch (err) {
         (0, _alerts.showAlert)('error', err.message);
     }
@@ -2343,6 +2361,30 @@ const signup = async (name, email, password, passwordConfirm)=>{
     } catch (err) {
         console.error('Signup Error:', err.response ? err.response.data : err);
         (0, _alerts.showAlert)('error', err.response.data.message);
+    }
+};
+
+},{"axios":"jNCqL","./alerts":"a1Hbh","@parcel/transformer-js/src/esmodule-helpers.js":"90RNB"}],"7AT9P":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "deleteUser", ()=>deleteUser);
+var _axios = require("axios");
+var _axiosDefault = parcelHelpers.interopDefault(_axios);
+var _alerts = require("./alerts"); // أو دالة التنبيهات المستعملة لديك
+const deleteUser = async (userId, userRow)=>{
+    try {
+        const res = await (0, _axiosDefault.default)({
+            method: 'DELETE',
+            url: `/api/v1/users/${userId}`
+        });
+        // كود 204 يعني تم الحذف بنجاح (No Content)
+        if (res.status === 204 || res.data.status === 'success') {
+            (0, _alerts.showAlert)('success', 'User deleted successfully!');
+            // إزالة السطر من جدول البيانات مباشرة
+            if (userRow) userRow.remove();
+        }
+    } catch (err) {
+        (0, _alerts.showAlert)('error', err.response?.data?.message || 'Failed to delete user');
     }
 };
 
