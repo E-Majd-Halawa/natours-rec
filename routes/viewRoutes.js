@@ -64,5 +64,10 @@ router.get(
   authController.restrictTo('admin'),
   viewController.getManageReviews,
 );
-
+router.get(
+  '/manage-bookings',
+  authController.protect,
+  authController.restrictTo('admin'),
+  viewController.getManageBookings,
+);
 module.exports = router;

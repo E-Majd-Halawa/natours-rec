@@ -175,6 +175,7 @@ const $f25c14890e575cd8$export$7d0f10f273c0438a = async (userId, userRow)=>{
 };
 
 
+
 // 1. تحديد الجدول
 const $e18016dbdc1c1791$var$usersTable = document.querySelector('.table-users');
 if ($e18016dbdc1c1791$var$usersTable) $e18016dbdc1c1791$var$usersTable.addEventListener('click', (e)=>{
@@ -266,5 +267,45 @@ if ($e18016dbdc1c1791$var$signupForm) $e18016dbdc1c1791$var$signupForm.addEventL
 });
 const $e18016dbdc1c1791$var$alertMessage = document.querySelector('body').dataset.alert;
 if ($e18016dbdc1c1791$var$alertMessage) (0, $9872a30d54cb2189$export$de026b00723010c1)('success', $e18016dbdc1c1791$var$alertMessage, 20);
+const $e18016dbdc1c1791$var$tableReviews = document.querySelector('.table-reviews');
+if ($e18016dbdc1c1791$var$tableReviews) $e18016dbdc1c1791$var$tableReviews.addEventListener('click', async (e)=>{
+    // التأكد من أن الضغط تم على زر الحذف
+    if (e.target.classList.contains('btn--delete-review')) {
+        const reviewId = e.target.dataset.reviewId;
+        if (confirm('Are you sure you want to delete this review?')) try {
+            // إرسال طلب الحذف للباك إند
+            const res = await (0, ($parcel$interopDefault($jANz3$axios)))({
+                method: 'DELETE',
+                url: `/api/v1/reviews/${reviewId}`
+            });
+            // HTTP status 204 تعني No Content (تم الحذف بنجاح)
+            if (res.status === 204) {
+                (0, $9872a30d54cb2189$export$de026b00723010c1)('success', 'Review deleted successfully!');
+                // حذف السطر مباشرة من الجدول بدون إعادة تحميل الصفحة
+                e.target.closest('tr').remove();
+            }
+        } catch (err) {
+            (0, $9872a30d54cb2189$export$de026b00723010c1)('error', err.response?.data?.message || 'Error deleting review!');
+        }
+    }
+});
+const $e18016dbdc1c1791$var$tableBookings = document.querySelector('.table-bookings');
+if ($e18016dbdc1c1791$var$tableBookings) $e18016dbdc1c1791$var$tableBookings.addEventListener('click', async (e)=>{
+    if (e.target.classList.contains('btn--delete-booking')) {
+        const bookingId = e.target.dataset.bookingId;
+        if (confirm('Are you sure you want to delete this booking?')) try {
+            const res = await (0, ($parcel$interopDefault($jANz3$axios)))({
+                method: 'DELETE',
+                url: `/api/v1/bookings/${bookingId}`
+            });
+            if (res.status === 204) {
+                (0, $9872a30d54cb2189$export$de026b00723010c1)('success', 'Booking deleted successfully!');
+                e.target.closest('tr').remove();
+            }
+        } catch (err) {
+            (0, $9872a30d54cb2189$export$de026b00723010c1)('error', err.response?.data?.message || 'Error deleting booking!');
+        }
+    }
+});
 
 

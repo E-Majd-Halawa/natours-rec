@@ -113,3 +113,12 @@ exports.getManageReviews = catchAsync(async (req, res, next) => {
     reviews,
   });
 });
+exports.getManageBookings = catchAsync(async (req, res, next) => {
+  // جلب كل الحجوزات من القاعدة مع بيانات المستخدم والجولة
+  const bookings = await Booking.find();
+
+  res.status(200).render('manageBookings', {
+    title: 'Manage Bookings',
+    bookings,
+  });
+});

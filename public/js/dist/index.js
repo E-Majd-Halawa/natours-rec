@@ -714,13 +714,16 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 }
 
 },{}],"3YnlV":[function(require,module,exports,__globalThis) {
-/* eslint-disable */ var _mapbox = require("./mapbox");
+/* eslint-disable */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+var _mapbox = require("./mapbox");
 var _login = require("./login");
 var _updateSettings = require("./updateSettings");
 var _stripe = require("./stripe");
 var _signup = require("./signup");
 var _alerts = require("./alerts");
 var _manageUsers = require("./manageUsers");
+var _axios = require("axios");
+var _axiosDefault = parcelHelpers.interopDefault(_axios);
 // 1. تحديد الجدول
 const usersTable = document.querySelector('.table-users');
 if (usersTable) usersTable.addEventListener('click', (e)=>{
@@ -812,8 +815,48 @@ if (signupForm) signupForm.addEventListener('submit', (e)=>{
 });
 const alertMessage = document.querySelector('body').dataset.alert;
 if (alertMessage) (0, _alerts.showAlert)('success', alertMessage, 20);
+const tableReviews = document.querySelector('.table-reviews');
+if (tableReviews) tableReviews.addEventListener('click', async (e)=>{
+    // التأكد من أن الضغط تم على زر الحذف
+    if (e.target.classList.contains('btn--delete-review')) {
+        const reviewId = e.target.dataset.reviewId;
+        if (confirm('Are you sure you want to delete this review?')) try {
+            // إرسال طلب الحذف للباك إند
+            const res = await (0, _axiosDefault.default)({
+                method: 'DELETE',
+                url: `/api/v1/reviews/${reviewId}`
+            });
+            // HTTP status 204 تعني No Content (تم الحذف بنجاح)
+            if (res.status === 204) {
+                (0, _alerts.showAlert)('success', 'Review deleted successfully!');
+                // حذف السطر مباشرة من الجدول بدون إعادة تحميل الصفحة
+                e.target.closest('tr').remove();
+            }
+        } catch (err) {
+            (0, _alerts.showAlert)('error', err.response?.data?.message || 'Error deleting review!');
+        }
+    }
+});
+const tableBookings = document.querySelector('.table-bookings');
+if (tableBookings) tableBookings.addEventListener('click', async (e)=>{
+    if (e.target.classList.contains('btn--delete-booking')) {
+        const bookingId = e.target.dataset.bookingId;
+        if (confirm('Are you sure you want to delete this booking?')) try {
+            const res = await (0, _axiosDefault.default)({
+                method: 'DELETE',
+                url: `/api/v1/bookings/${bookingId}`
+            });
+            if (res.status === 204) {
+                (0, _alerts.showAlert)('success', 'Booking deleted successfully!');
+                e.target.closest('tr').remove();
+            }
+        } catch (err) {
+            (0, _alerts.showAlert)('error', err.response?.data?.message || 'Error deleting booking!');
+        }
+    }
+});
 
-},{"./mapbox":"3NDmA","./login":"atXZs","./updateSettings":"4mZ6r","./stripe":"8yDJi","./signup":"dQoq3","./alerts":"a1Hbh","./manageUsers":"7AT9P"}],"3NDmA":[function(require,module,exports,__globalThis) {
+},{"./mapbox":"3NDmA","./login":"atXZs","./updateSettings":"4mZ6r","./stripe":"8yDJi","./signup":"dQoq3","./alerts":"a1Hbh","./manageUsers":"7AT9P","axios":"jNCqL","@parcel/transformer-js/src/esmodule-helpers.js":"90RNB"}],"3NDmA":[function(require,module,exports,__globalThis) {
 /* eslint-disable */ // const mapEl = document.getElementById('map');
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);

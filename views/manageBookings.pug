@@ -1,0 +1,54 @@
+extends base
+
+mixin navItem(link, text, icon, active)
+  li(class=`${active ? 'side-nav--active' : ''}`)
+    a(href=`${link}`)
+      svg
+        use(xlink:href=`/img/icons.svg#icon-${icon}`)
+      | #{text}
+
+block content
+  main.main
+    .user-view
+      nav.user-view__menu
+        ul.side-nav
+          +navItem('/me', 'Settings', 'settings')
+          +navItem('/my-tours', 'My bookings', 'briefcase')
+          +navItem('#', 'My reviews', 'star')
+          +navItem('#', 'Billing', 'credit-card')
+        if user.role === 'admin'
+          .admin-nav
+            h5.admin-nav__heading Admin
+            ul.side-nav
+              +navItem('/manage-tours', 'Manage tours', 'map')
+              +navItem('/manage-users', 'Manage users', 'users')
+              +navItem('/manage-reviews', 'Manage reviews', 'star')
+              +navItem('/manage-bookings', 'Manage bookings', 'briefcase', true)
+
+      .user-view__content
+        .user-view__form-container
+          h2.heading-secondary.ma-bt-md Manage Bookings
+
+          if !bookings || bookings.length === 0
+            p.no-data No bookings found in the system.
+          else
+            table.table-bookings
+              thead
+                tr
+                  th Tour
+                  th User
+                  th Price
+                  th Paid Status
+                  th Date
+                  th Action
+              tbody
+                each booking in bookings
+                  tr(data-booking-id=booking.id)
+                    td= booking.tour ? booking.tour.name : 'Deleted Tour'
+                    td= booking.user ? booking.user.name : 'Deleted User'
+                    td $#{booking.price}
+                    td
+                      span= booking.paid !== false ? '✅ Paid' : '❌ Unpaid'
+                    td= new Date(booking.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    td
+                      button.btn.btn--small.btn--danger.btn--delete-booking(data-booking-id=booking.id) Delete
