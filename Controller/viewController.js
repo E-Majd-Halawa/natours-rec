@@ -96,3 +96,19 @@ exports.getManageUsers = catchAsync(async (req, res, next) => {
     users,
   });
 });
+exports.getManageReviews = catchAsync(async (req, res, next) => {
+  const reviews = await Review.find()
+    .populate({
+      path: 'user',
+      select: 'name photo',
+    })
+    .populate({
+      path: 'tour',
+      select: 'name',
+    });
+
+  res.status(200).render('manageReviews', {
+    title: 'Manage Reviews',
+    reviews,
+  });
+});

@@ -1,0 +1,35 @@
+extends base
+
+block content
+  main.main
+    .user-view
+      include _adminMenu
+
+      .user-view__content
+        .user-view__form-container
+          h2.heading-secondary.ma-bt-md Manage Reviews
+
+          table.table-reviews
+            thead
+              tr
+                th User
+                th Tour / Item
+                th Rating
+                th Review Text
+                th Date
+                th Actions
+            tbody
+              each review in reviews
+                tr(data-review-id=review.id)
+                  td.user-cell
+                    - const userPhoto = review.user.photo.startsWith('data:') ? review.user.photo : `/img/users/${review.user.photo}`
+                    img.user-cell__img(src=userPhoto, alt=review.user.name)
+                    span= review.user.name
+                  td= review.tour ? review.tour.name : 'N/A'
+                  td
+                    span.rating-stars ⭐ #{review.rating}/5
+                  td.review-text-cell
+                    p.review-text= review.review
+                  td= new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                  td
+                    button.btn.btn--small.btn--danger.btn--delete-review(data-review-id=review.id) Delete
