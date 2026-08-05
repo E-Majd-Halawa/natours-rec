@@ -18,7 +18,8 @@ const bookingController = require('./Controller/bookingController');
 const viewRouter = require('./routes/viewRoutes');
 //Start express app
 const app = express();
-app.enable('trust proxy');
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+app.enable('trust proxy', 1);
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 

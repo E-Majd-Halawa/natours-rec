@@ -1,0 +1,27 @@
+extends base
+
+block content
+  main.main
+    .user-view
+      .manage-users__container(style="max-width: 1000px; margin: 0 auto; padding: 3rem 0;")
+        h2.heading-secondary.ma-bt-md Manage All Users
+        
+        table.table-users(style="width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 1.5rem 4rem rgba(0,0,0,0.1); border-radius: 9px; overflow: hidden;")
+          thead(style="background-color: #55c57a; color: #fff;")
+            tr
+              th(style="padding: 1.5rem; text-align: left;") Photo
+              th(style="padding: 1.5rem; text-align: left;") Name
+              th(style="padding: 1.5rem; text-align: left;") Email
+              th(style="padding: 1.5rem; text-align: left;") Role
+              th(style="padding: 1.5rem; text-align: center;") Actions
+          tbody
+            each usr in users
+              tr(style="border-bottom: 1px solid #eee;")
+                td(style="padding: 1.2rem;")
+                  img(src=`/img/users/${usr.photo}`, alt=usr.name, style="height: 4rem; width: 4rem; border-radius: 50%; object-fit: cover;")
+                td(style="padding: 1.2rem;")= usr.name
+                td(style="padding: 1.2rem;")= usr.email
+                td(style="padding: 1.2rem;")
+                  span(style=`padding: 0.4rem 0.8rem; border-radius: 100px; font-size: 1.2rem; font-weight: 700; background-color: ${usr.role === 'admin' ? '#e74c3c' : '#28b487'}; color: #fff;`)= usr.role.toUpperCase()
+                td(style="padding: 1.2rem; text-align: center;")
+                  button.btn.btn--small.btn--red.btn--delete-user(data-user-id=usr.id) Delete

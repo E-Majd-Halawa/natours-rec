@@ -11,6 +11,12 @@ router.get(
   authController.restrictTo('admin'),
   viewController.getNewTourForm,
 );
+router.get(
+  '/manage-users',
+  authController.protect,
+  authController.restrictTo('admin'),
+  viewController.getManageUsers,
+);
 router.get('/signup', authController.isLoggedIn, viewController.getSignupForm);
 
 router.get(

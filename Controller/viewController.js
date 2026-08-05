@@ -86,3 +86,13 @@ exports.getNewTourForm = (req, res) => {
     tour: null,
   });
 };
+exports.getManageUsers = catchAsync(async (req, res, next) => {
+  // 1) جلب جميع المستخدمين
+  const users = await User.find();
+
+  // 2) عرض الصفحة
+  res.status(200).render('manageUsers', {
+    title: 'Manage Users',
+    users,
+  });
+});
