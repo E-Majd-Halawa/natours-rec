@@ -1,35 +1,64 @@
 extends base
 
+mixin navItem(link, text, icon, active)
+  li(class=`${active ? 'side-nav--active' : ''}`)
+    a(href=`${link}`)
+      svg
+        use(xlink:href=`/img/icons.svg#icon-${icon}`)
+      | #{text}
+
 block content
   main.main
     .user-view
-      include _adminMenu
+      nav.user-view__menu
+        ul.side-nav
+          +navItem('/me', 'Settings', 'settings')
+          +navItem('/my-tours', 'My bookings', 'briefcase')
+          +navItem('#', 'My reviews', 'star')
+          +navItem('#', 'Billing', 'credit-card')
+        if user.role === 'admin'
+          .admin-nav
+            h5.admin-nav__heading Admin
+            ul.side-nav
+              +navItem('/manage-tours', 'Manage tours', 'map')
+              +navItem('/manage-users', 'Manage users', 'users')
+              +navItem('/manage-reviews', 'Manage reviews', 'star', true)
+              +navItem('#', 'Manage bookings', 'briefcase')
 
       .user-view__content
         .user-view__form-container
           h2.heading-secondary.ma-bt-md Manage Reviews
 
-          table.table-reviews
-            thead
-              tr
-                th User
-                th Tour / Item
-                th Rating
-                th Review Text
-                th Date
-                th Actions
-            tbody
-              each review in reviews
-                tr(data-review-id=review.id)
-                  td.user-cell
-                    - const userPhoto = review.user.photo.startsWith('data:') ? review.user.photo : `/img/users/${review.user.photo}`
-                    img.user-cell__img(src=userPhoto, alt=review.user.name)
-                    span= review.user.name
-                  td= review.tour ? review.tour.name : 'N/A'
-                  td
-                    span.rating-stars ⭐ #{review.rating}/5
-                  td.review-text-cell
-                    p.review-text= review.review
-                  td= new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                  td
-                    button.btn.btn--small.btn--danger.btn--delete-review(data-review-id=review.id) Delete
+          if !reviews || reviews.length === 0
+            p.no-data No reviews found in the system.
+          else
+            table.table-reviews
+              thead
+                tr
+                  th User
+                  th Tour
+                  th Rating
+                  th Review
+                  th Date
+                  th Action
+              tbody
+                each review in reviews
+                  tr(data-review-id=review.id)
+                    td.user-cell
+                      - const photo = review.user && review.user.photo ? review.user.photo : 'default.jpg'
+                      - const userPhoto = photo.startsWith('data:') ? photo : `/img/users/${photo}`
+                      img.user-cell__img(src=userPhoto, alt=review.user ? review.user.name : 'User')
+                      span= review.user ? review.user.name : 'Deleted User'
+                    
+                    td= review.tour ? review.tour.name : 'N/A'
+                    
+                    td
+                      span.rating-stars ⭐ #{review.rating}/5
+                    
+                    td.review-text-cell
+                      p.review-text= review.review
+                    
+                    td= new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    
+                    td
+                      button.btn.btn--small.btn--danger.btn--delete-review(data-review-id=review.id) Delete
