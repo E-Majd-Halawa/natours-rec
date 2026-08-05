@@ -78,6 +78,25 @@ block content
                     +reviewCard(review)
             button.reviews__btn.reviews__btn--right(aria-label='Next review') ›
 
+        // --- إضافة نموذج المراجعة لليوزر المسجل ---
+        if user
+            .add-review-box
+                h2.heading-secondary.ma-bt-md Leave your review
+                form.form.form--review#review-form(data-tour-id=`${tour.id}`)
+                    .form__group
+                        label.form__label(for='rating') Rating
+                        select#rating.form__input(required)
+                            option(value='5') ⭐⭐⭐⭐⭐ (5/5 - Excellent)
+                            option(value='4') ⭐⭐⭐⭐☆ (4/5 - Very Good)
+                            option(value='3') ⭐⭐⭐☆☆ (3/5 - Good)
+                            option(value='2') ⭐⭐☆☆☆ (2/5 - Fair)
+                            option(value='1') ⭐☆☆☆☆ (1/5 - Poor)
+                    .form__group
+                        label.form__label(for='review') Your Review
+                        textarea#review.form__input(rows='4', placeholder='Share your experience with this tour...', required)
+                    .form__group
+                        button.btn.btn--green Submit Review
+
     section.section-cta
         .cta
             .cta__img.cta__img--logo
