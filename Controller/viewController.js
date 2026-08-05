@@ -81,12 +81,12 @@ exports.getManageTours = catchAsync(async (req, res, next) => {
     tours,
   });
 });
-// exports.getNewTourForm = (req, res) => {
-//   res.status(200).render('manageTourForm', {
-//     title: 'New tour',
-//     tour: null,
-//   });
-// };
+exports.getNewTourForm = (req, res) => {
+  res.status(200).render('manageTourForm', {
+    title: 'New tour',
+    tour: null,
+  });
+};
 exports.getTourForm = catchAsync(async (req, res, next) => {
   let tour = null;
   if (req.params.id) {

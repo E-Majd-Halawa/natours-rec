@@ -1,26 +1,3 @@
-// const fs = require('fs');
-// const tours = JSON.parse(
-//   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
-// );
-
-// exports.checkID = (req, res, next, val) => {
-//   if (req.params.id * 1 > tours.length) {
-//     return res.status(404).json({
-//       status: 'fail',
-//       message: 'Invalid ID',
-//     });
-//   }
-//   next();
-// };
-// exports.checkBody = (req, res, next) => {
-//   if (!req.body.name || !req.body.price) {
-//     return res.status(400).json({
-//       status: 'fail',
-//       data: 'Missing name or price',
-//     });
-//   }
-//   next();
-// };
 const Tour = require('./../Models/tourModel.js');
 const catchAsync = require('../utils/catchAsync.js');
 const AppError = require('../utils/appError.js');
@@ -79,74 +56,9 @@ exports.aliasTopTours = (req, res, next) => {
 
 exports.getAllTours = factory.getAll(Tour, { path: 'reviews' });
 exports.getTour = factory.getOne(Tour, { path: 'reviews' });
-// try {
-//   const tour = await Tour.findById(req.params.id);
-//   res.status(200).json({
-//     status: 'success',
-//     data: { tour },
-//   });
-// } catch (err) {
-//   console.log(err);
-//   res.status(400).json({
-//     status: 'fail',
-//     data: err.message,
-//   });
-// }
-// const id = req.params.id * 1;
-// if (id > tours.length) {
-// const tour = tours.find((el) => el.id === id);
-// console.log(tour);
-
-// res.status(200).json({
-//   status: 'success',
-//   results: tours.length,
-//   data: { tour },
-// });
-
 exports.creatTour = factory.createOne(Tour);
-// try {
-//   const tour = await Tour.create(req.body);
-//   res.status(201).json({
-//     status: 'success',
-//     data: { tour },
-//   });
-// } catch (err) {
-//   console.log(err);
-
-//   res.status(400).json({
-//     status: 'fail',
-//     data: err.message,
-//   });
-// }
-// console.log(req.body);
-// const newId = tours[tours.length - 1].id + 1;
-// const newTour = Object.assign({ id: newId }, req.body);
-// tours.push(newTour);
-// fs.writeFile(
-//   `${__dirname}/dev-data/data/tours-simple.json`,
-//   JSON.stringify(tours),
-//   (err) => {
-//     res.status(201).json({
-//       status: 'success',
-//       data: newTour,
-//     });
-//   },
-// );
-// res.send(newTour);
-
 exports.updateTour = factory.updateOne(Tour);
 exports.deleteTour = factory.deleteOne(Tour);
-// try {
-//   const deleteTour = await Tour.findByIdAndDelete(req.params.id);
-//   res.status(204).json({
-//     status: 'success',
-//     data: null,
-//   });
-// } catch (err) {
-//   res.status(400).json({
-//     status: 'fail',
-//   });
-// }
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
     {
@@ -215,7 +127,7 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
   //   });
   // }
 });
-exports.getMothlyPlan = catchAsync(async (req, res, next) => {
+exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   const year = req.params.year * 1;
   const plan = await Tour.aggregate([
     {
