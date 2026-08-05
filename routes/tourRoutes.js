@@ -1,5 +1,6 @@
 const express = require('express');
 const tourController = require('../Controller/tourController');
+console.log('TOUR CONTROLLER KEYS:', Object.keys(tourController));
 const authController = require('../Controller/authController');
 const reviewRouter = require('./reviewRoutes');
 const router = express.Router();
