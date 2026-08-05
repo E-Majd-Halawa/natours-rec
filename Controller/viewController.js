@@ -81,12 +81,27 @@ exports.getManageTours = catchAsync(async (req, res, next) => {
     tours,
   });
 });
-exports.getNewTourForm = (req, res) => {
-  res.status(200).render('manageTourForm', {
-    title: 'New tour',
-    tour: null,
+// exports.getNewTourForm = (req, res) => {
+//   res.status(200).render('manageTourForm', {
+//     title: 'New tour',
+//     tour: null,
+//   });
+// };
+exports.getTourForm = catchAsync(async (req, res, next) => {
+  let tour = null;
+  if (req.params.id) {
+    tour = await Tour.findById(req.params.id);
+  }
+
+  // إحضار كافة المرشدين لعرضهم في القائمة الاختيارية
+  const allGuides = await User.find({ role: { $in: ['guide', 'lead-guide'] } });
+
+  res.status(200).render('tourForm', {
+    title: tour ? `Edit ${tour.name}` : 'New Tour',
+    tour,
+    allGuides,
   });
-};
+});
 exports.getManageUsers = catchAsync(async (req, res, next) => {
   // 1) جلب جميع المستخدمين
   const users = await User.find();
