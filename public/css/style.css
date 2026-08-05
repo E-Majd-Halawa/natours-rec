@@ -1376,3 +1376,174 @@ select:focus-visible {
   opacity: 0.5;
   pointer-events: none;
 }
+/* --- Billing Dashboard Styling --- */
+.billing-dashboard {
+  padding: 1rem 0;
+}
+
+.billing-subtitle {
+  font-size: 1.4rem;
+  color: #777;
+  margin-bottom: 2.5rem;
+}
+
+/* Stats Cards Section */
+.billing-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  border: 1px solid #f0f0f0;
+}
+
+.stat-card__icon {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-card__icon svg {
+  width: 2.5rem;
+  height: 2.5rem;
+  fill: #fff;
+}
+
+.stat-card__icon--green {
+  background: linear-gradient(135deg, #55c57a, #28b487);
+}
+.stat-card__icon--blue {
+  background: linear-gradient(135deg, #2998ff, #5643fa);
+}
+.stat-card__icon--star {
+  background: linear-gradient(135deg, #ffb900, #ff7730);
+}
+
+.stat-card__label {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  color: #999;
+  font-weight: 600;
+  display: block;
+}
+
+.stat-card__value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #333;
+}
+
+/* Modern Table Layout */
+.table-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 1.4rem;
+}
+
+.modern-table thead {
+  background-color: #f9fafb;
+  border-bottom: 2px solid #edf2f7;
+}
+
+.modern-table th {
+  padding: 1.6rem 2rem;
+  font-weight: 600;
+  color: #4a5568;
+  text-transform: uppercase;
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+}
+
+.modern-table td {
+  padding: 1.8rem 2rem;
+  border-bottom: 1px solid #edf2f7;
+  color: #2d3748;
+  vertical-align: middle;
+}
+
+.modern-table tbody tr:hover {
+  background-color: #f7fafc;
+  transition: background-color 0.2s ease;
+}
+
+/* Specific Columns Styling */
+.invoice-tag {
+  font-family: monospace;
+  font-weight: 700;
+  color: #55c57a;
+  background: #eafaf1;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 1.2rem;
+}
+
+.tour-name {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.price-amount {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #1a202c;
+}
+
+/* Badges */
+.badge {
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: inline-block;
+  text-transform: capitalize;
+}
+
+.badge--paid {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.badge--pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+/* Action Button */
+.btn-action {
+  background: transparent;
+  border: 1px solid #cbd5e0;
+  padding: 0.6rem 1.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #4a5568;
+  transition: all 0.2s;
+}
+
+.btn-action:hover {
+  background-color: #55c57a;
+  color: #fff;
+  border-color: #55c57a;
+}
