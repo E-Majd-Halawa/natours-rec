@@ -98,4 +98,4 @@ if (signupForm) {
   });
 }
 const alertMessage = document.querySelector('body').dataset.alert;
-if (aler) showAlert('success', alertMessage, 20);
+if (alertMessage) showAlert('success', alertMessage, 20);
