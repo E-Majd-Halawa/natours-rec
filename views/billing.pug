@@ -14,8 +14,8 @@ block content
         ul.side-nav
           +navItem('/me', 'Settings', 'settings')
           +navItem('/my-tours', 'My bookings', 'briefcase')
-          +navItem('/my-reviews', 'My reviews', 'star')
-          +navItem('/billing', 'Billing', 'credit-card', true)
+          +navItem('/my-reviews', 'My reviews', 'star', true)
+          +navItem('/billing', 'Billing', 'credit-card')
         if user && user.role === 'admin'
           .admin-nav
             h5.admin-nav__heading Admin
@@ -26,47 +26,45 @@ block content
               +navItem('/manage-bookings', 'Manage bookings', 'briefcase')
 
       .user-view__content
-        .billing-container
-          .billing-header
-            h2.heading-secondary Billing & Invoices
-            p.billing-subtitle Manage your tour transaction history and download receipts.
+        .reviews-container
+          .reviews-header
+            h2.heading-secondary My Reviews
+            p.reviews-subtitle View, manage, and track all the tour reviews you have submitted.
 
-          - const totalSpent = bookings ? bookings.reduce((sum, b) => sum + (b.price || 0), 0) : 0
+          - const totalReviews = reviews ? reviews.length : 0
+          - const avgRating = totalReviews ? (reviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews).toFixed(1) : '0.0'
 
           // --- 1. Metrics Bar ---
-          .billing-metrics
+          .reviews-metrics
             .metric-box
-              span.metric-box__label Total Spent
-              span.metric-box__value= `$${totalSpent.toFixed(2)}`
+              span.metric-box__label Total Reviews
+              span.metric-box__value= totalReviews
             .metric-box
-              span.metric-box__label Invoices Issued
-              span.metric-box__value= bookings ? bookings.length : 0
+              span.metric-box__label Average Rating Given
+              span.metric-box__value= `${avgRating} ★`
 
-          // --- 2. Minimalist History List ---
-          .billing-section
-            h3.billing-section__title Transaction History
+          // --- 2. Minimalist Reviews List ---
+          .reviews-section
+            h3.reviews-section__title Review History
 
-            if !bookings || bookings.length === 0
-              p.no-data No billing history found.
+            if !reviews || reviews.length === 0
+              p.no-data You haven't written any reviews yet.
             else
-              .billing-list
-                each booking, i in bookings
-                  .billing-row
-                    .billing-row__info
-                      h4.billing-row__title= booking.tour ? booking.tour.name : 'Tour Booking'
-                      .billing-row__meta
-                        span.invoice-id= `#INV-${new Date(booking.createdAt).getFullYear()}-${(i + 1).toString().padStart(3, '0')}`
-                        span.meta-dot •
-                        span.payment-date= new Date(booking.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                    
-                    .billing-row__status
-                      if booking.paid !== false
-                        span.status-pill.status-pill--paid Paid
-                      else
-                        span.status-pill.status-pill--pending Pending
-                    
-                    .billing-row__amount
-                      span.amount-text= `$${booking.price.toFixed(2)}`
-                    
-                    .billing-row__action
-                      button.btn-receipt(onclick="window.print()") Receipt
+              .reviews-list
+                each review in reviews
+                  .review-card(data-review-id=`${review.id}`)
+                    .review-card__header
+                      .review-card__tour-info
+                        h4.review-card__title= review.tour ? review.tour.name : 'Tour Review'
+                        span.review-card__date= new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                      
+                      .review-card__rating
+                        span.rating-badge= `${review.rating} / 5 ★`
+
+                    .review-card__body
+                      p.review-card__text= review.review
+
+                    .review-card__footer
+                      if review.tour
+                        a.btn-action.btn-action--view(href=`/tour/${review.tour.slug}`) View Tour
+                      button.btn-action.btn-action--delete.btn-delete-review(data-id=`${review.id}`) Delete
