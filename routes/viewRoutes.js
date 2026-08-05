@@ -47,9 +47,14 @@ router.get(
   '/manage-tours/new',
   authController.protect,
   authController.restrictTo('admin'),
-  viewController.getNewTourForm,
+  viewController.getTourForm,
 );
-
+router.get(
+  '/manage-tours/edit/:id',
+  authController.protect,
+  authController.restrictTo('admin'),
+  viewController.getTourForm,
+);
 router.get(
   '/manage-users',
   authController.protect,
