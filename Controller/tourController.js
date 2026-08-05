@@ -56,7 +56,22 @@ exports.aliasTopTours = (req, res, next) => {
 
 exports.getAllTours = factory.getAll(Tour, { path: 'reviews' });
 exports.getTour = factory.getOne(Tour, { path: 'reviews' });
-exports.creatTour = factory.createOne(Tour);
+// controllers/tourController.js
+exports.createTour = catchAsync(async (req, res, next) => {
+  // إذا كانت البيانات قادمة كـ String بسبب FormData:
+  if (typeof req.body.startLocation === 'string') {
+    req.body.startLocation = JSON.parse(req.body.startLocation);
+  }
+
+  const newTour = await Tour.create(req.body);
+
+  res.status(201).json({
+    status: 'success',
+    data: {
+      data: newTour,
+    },
+  });
+});
 exports.updateTour = factory.updateOne(Tour);
 exports.deleteTour = factory.deleteOne(Tour);
 exports.getTourStats = catchAsync(async (req, res, next) => {

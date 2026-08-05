@@ -93,13 +93,14 @@ exports.getTourForm = catchAsync(async (req, res, next) => {
     tour = await Tour.findById(req.params.id);
   }
 
-  // إحضار كافة المرشدين لعرضهم في القائمة الاختيارية
+  // 1) جلب جميع المرشدين ديناميكياً من قاعدة البيانات
   const allGuides = await User.find({ role: { $in: ['guide', 'lead-guide'] } });
 
+  // 2) رندر الصفحة مع إرسال المرشدين والـ tour
   res.status(200).render('tourForm', {
-    title: tour ? `Edit ${tour.name}` : 'New Tour',
+    title: tour ? `Edit ${tour.name}` : 'Create New Tour',
     tour,
-    allGuides,
+    allGuides, // 👈 إرسال قائمة المرشدين لصفحة Pug
   });
 });
 exports.getManageUsers = catchAsync(async (req, res, next) => {
