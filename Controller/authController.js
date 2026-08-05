@@ -48,7 +48,6 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   // كمل إرسال الـ Response والـ Cookie عادي
   createSendToken(newUser, 201, req, res);
-  createSendToken(newUser, 201, req, res);
 });
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
@@ -62,7 +61,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
   }
   // 3)if everything is ok , send token to the client
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 exports.logout = (req, res) => {
   res.cookie('jwt', 'loggedout', {
