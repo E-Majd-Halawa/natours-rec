@@ -4,7 +4,7 @@ mixin navItem(link, text, icon, active)
     li(class=`${active ? 'side-nav--active' : ''}`)
         a(href=`${link}`)
             svg
-                use(xlink:href=`img/icons.svg#icon-${icon}`)
+                use(xlink:href=`/img/icons.svg#icon-${icon}`)
             | #{text}
 
 block content
@@ -37,7 +37,8 @@ block content
                             label.form__label(for='email') Email address
 
                         .form__group.form__photo-upload
-                            img.form__user-photo(src=`img/users/${user.photo}`, alt='User photo')
+                            - const photoSrc = user.photo && user.photo.startsWith('data:') ? user.photo : `/img/users/${user.photo || 'default.jpg'}`
+                            img.form__user-photo(src=photoSrc, alt='User photo')
                             .form__photo-actions
                                 label.form__upload-label(for='photo') Choose new photo
                                 input.form__upload(type='file', accept='image/*', id='photo', name='photo')
