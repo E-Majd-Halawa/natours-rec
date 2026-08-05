@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { showAlert } from './alerts';
+
 export const updateSettings = async (data, type) => {
   try {
     const url = type === 'password' ? '/updatePassword' : '/updateMe';
@@ -10,11 +11,19 @@ export const updateSettings = async (data, type) => {
       headers: isFormData ? {} : { 'Content-Type': 'application/json' },
       body: isFormData ? data : JSON.stringify(data),
     });
+
     const resData = await res.json();
+
     if (!res.ok) {
       throw new Error(resData.message || 'Something went wrong');
     }
+
     showAlert('success', `${type.toUpperCase()} was successfully updated`);
+
+    // إعطاء مهلة 1.5 ثانية ليقرأ المستخدم التنبيه ثم تحديث الصفحة لرؤية الصورة الجديدة
+    window.setTimeout(() => {
+      location.reload(true);
+    }, 1500);
   } catch (err) {
     showAlert('error', err.message);
   }

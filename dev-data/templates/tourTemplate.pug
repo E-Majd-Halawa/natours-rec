@@ -45,15 +45,18 @@ section.section-description
       .overview-box__group
         h2.heading-secondary.ma-bt-lg Your tour guides
         .overview-box__detail
-          img.overview-box__img(src='/img/users/user-19.jpg', alt='Lead guide')
+          - const guidePhoto1 = guide1 && guide1.photo && guide1.photo.startsWith('data:') ? guide1.photo : '/img/users/user-19.jpg'
+          img.overview-box__img(src=guidePhoto1, alt='Lead guide')
           span.overview-box__label Lead guide
           span.overview-box__text Steven Miller
         .overview-box__detail
-          img.overview-box__img(src='/img/users/user-18.jpg', alt='Tour guide')
+          - const guidePhoto2 = guide2 && guide2.photo && guide2.photo.startsWith('data:') ? guide2.photo : '/img/users/user-18.jpg'
+          img.overview-box__img(src=guidePhoto2, alt='Tour guide')
           span.overview-box__label Tour guide
           span.overview-box__text Lisa Brown
         .overview-box__detail
-          img.overview-box__img(src='/img/users/user-17.jpg', alt='Intern')
+          - const guidePhoto3 = guide3 && guide3.photo && guide3.photo.startsWith('data:') ? guide3.photo : '/img/users/user-17.jpg'
+          img.overview-box__img(src=guidePhoto3, alt='Intern')
           span.overview-box__label Intern
           span.overview-box__text Max Smith
 
@@ -75,10 +78,10 @@ section.section-map
 
 section.section-reviews
   .reviews
-
     .reviews__card
       .reviews__avatar
-        img.reviews__avatar-img(src='/img/users/user-7.jpg', alt='Jim Brown')
+        - const reviewerPhoto = reviewUser && reviewUser.photo && reviewUser.photo.startsWith('data:') ? reviewUser.photo : '/img/users/user-7.jpg'
+        img.reviews__avatar-img(src=reviewerPhoto, alt='Jim Brown')
         h6.reviews__user Jim Brown
       p.reviews__text Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque dignissimos sint quo commodi corrupti accusantium veniam saepe numquam.
       .reviews__rating

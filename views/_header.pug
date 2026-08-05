@@ -7,7 +7,8 @@ header.header
         if user
             a.nav__el.nav__el--logout.nav__el--cta(href='/') Log out
             a.nav__el(href='/me')
-                img.nav__user-img.nav__el(src=`/img/users/${user.photo}` alt=`Photo of ${user.name}`)
+                - const photoSrc = user.photo && user.photo.startsWith('data:') ? user.photo : `/img/users/${user.photo || 'default.jpg'}`
+                img.nav__user-img.nav__el(src=photoSrc alt=`Photo of ${user.name}`)
                 span #{user.name.split(' ')[0]}
         else        
             a.nav__el(href='/loginForm') Log in

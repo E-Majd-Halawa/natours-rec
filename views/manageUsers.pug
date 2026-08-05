@@ -18,7 +18,8 @@ block content
             each usr in users
               tr(style="border-bottom: 1px solid #eee;")
                 td(style="padding: 1.2rem;")
-                  img(src=`/img/users/${usr.photo}`, alt=usr.name, style="height: 4rem; width: 4rem; border-radius: 50%; object-fit: cover;")
+                  - const photoSrc = usr.photo && usr.photo.startsWith('data:') ? usr.photo : `/img/users/${usr.photo || 'default.jpg'}`
+                  img(src=photoSrc, alt=usr.name, style="height: 4rem; width: 4rem; border-radius: 50%; object-fit: cover;")
                 td(style="padding: 1.2rem;")= usr.name
                 td(style="padding: 1.2rem;")= usr.email
                 td(style="padding: 1.2rem;")
