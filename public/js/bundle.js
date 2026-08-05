@@ -228,6 +228,6 @@ if ($e18016dbdc1c1791$var$signupForm) $e18016dbdc1c1791$var$signupForm.addEventL
     (0, $57c58b919921038b$export$7200a869094fec36)(name, email, password, passwordConfirm);
 });
 const $e18016dbdc1c1791$var$alertMessage = document.querySelector('body').dataset.alert;
-if (aler) (0, $9872a30d54cb2189$export$de026b00723010c1)('success', $e18016dbdc1c1791$var$alertMessage, 20);
+if ($e18016dbdc1c1791$var$alertMessage) (0, $9872a30d54cb2189$export$de026b00723010c1)('success', $e18016dbdc1c1791$var$alertMessage, 20);
 
 
