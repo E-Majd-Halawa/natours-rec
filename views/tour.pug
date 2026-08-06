@@ -1,9 +1,6 @@
 extends base
 
 block append head
-    // مكتبة Leaflet لرسم الخريطة
-    link(rel='stylesheet', href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css')
-    script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js')
     script(src='https://js.stripe.com/v3/')
 
 mixin overviewBox(label, text, icon)
@@ -24,7 +21,7 @@ block content
                 svg(viewBox='0 0 1200 60' preserveAspectRatio='none')
                     path(fill='#F5F7F1' d='M0 60 L0 34 L60 20 L140 42 L230 10 L320 38 L410 16 L500 44 L600 22 L700 46 L800 18 L900 40 L1000 14 L1100 38 L1200 24 L1200 60 Z')
         .heading-box
-            span.heading-box__eyebrow= `${tour.difficulty} · ${tour.duration}-day tour`
+            span.heading-box__eyebrow= tour.difficulty + ' · ' + tour.duration + '-day tour'
             h1.heading-primary= `${tour.name} Tour`
             .heading-box__group
                 .heading-box__detail
@@ -34,7 +31,7 @@ block content
                 .heading-box__detail
                     svg.heading-box__icon
                         use(xlink:href='/img/icons.svg#icon-map-pin')
-                    span.heading-box__text= tour.startLocation ? tour.startLocation.description : 'Location TBA'
+                    span.heading-box__text= tour.startLocation.description
 
     section.section-description
         .overview-box
@@ -48,48 +45,40 @@ block content
 
             .overview-box__group
                 h2.heading-secondary.ma-bt-lg Your tour guides
-                if tour.guides && tour.guides.length
-                    each guide in tour.guides
-                        .overview-box__detail
-                            img.overview-box__img(src=`/img/users/${guide.photo || 'default.jpg'}`, alt=guide.name)
-                            if guide.role === 'lead-guide'
-                                span.overview-box__label Lead guide
-                            if guide.role === 'guide'
-                                span.overview-box__label Tour guide
-                            span.overview-box__text= guide.name
-                else
-                    p.overview-box__text No guides assigned yet.
+                each guide in tour.guides
+                    .overview-box__detail
+                        img.overview-box__img(src=`/img/users/${guide.photo}`, alt=guide.name)
+                        if guide.role==='lead-guide'
+                            span.overview-box__label Lead guide
+                        if guide.role==='guide'
+                            span.overview-box__label Tour guide
+                        span.overview-box__text= guide.name
 
         .description-box
             h2.heading-secondary.ma-bt-lg= `About ${tour.name} tour`
-            - const paragraphs = tour.description ? tour.description.split('\n') : ['No description available.']
+            - const paragraphs=tour.description.split('\n');
             each p in paragraphs
                 p.description__text= p
 
     section.section-pictures
-        if tour.images && tour.images.length
-            each img, i in tour.images
-                .picture-box
-                    img.picture-box__img(src=`/img/tours/${img}`, alt=`${tour.name} ${i+1}`, class=`picture-box__img--${i+1}`, loading='lazy')
+        each img, i in tour.images
+            .picture-box
+                img.picture-box__img(src=`/img/tours/${img}`, alt=`${tour.name} ${i+1}`, class=`picture-box__img--${i+1}`, loading='lazy')
 
     section.section-map
         h2.heading-secondary.ma-bt-lg.section-map__heading Route
-        // fallback: إذا كانت locations فارغة نمرر startLocation لتظهر على الخريطة
-        - const mapLocations = (tour.locations && tour.locations.length) ? tour.locations : (tour.startLocation ? [tour.startLocation] : [])
-        #map(data-locations=`${JSON.stringify(mapLocations)}`)
+        #map(data-locations=`${JSON.stringify(tour.locations)}`)
 
     section.section-reviews
         h2.heading-secondary.ma-bt-lg.section-reviews__heading What explorers are saying
         .reviews-wrapper
             button.reviews__btn.reviews__btn--left(aria-label='Previous review') ‹
             .reviews
-                if tour.reviews && tour.reviews.length
-                    each review in tour.reviews
-                        +reviewCard(review)
-                else
-                    p.overview-box__text No reviews yet.
+                each review in tour.reviews
+                    +reviewCard(review)
             button.reviews__btn.reviews__btn--right(aria-label='Next review') ›
 
+        // --- إضافة نموذج المراجعة لليوزر المسجل ---
         if user
             .add-review-box
                 h2.heading-secondary.ma-bt-md Leave your review
@@ -125,7 +114,7 @@ block content
                     a.btn.btn--green.span-all-rows(href='/loginForm') Log in to book tour now!
 
 block append scripts
+    script(src='/js/reviewCarousel.js')
     script(src='https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js')
-    script(type='module', src='/js/displayMap.js')
     script(src='/js/reviewCarousel.js')
     script(src='/js/addReview.js')
