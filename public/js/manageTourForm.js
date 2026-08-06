@@ -102,11 +102,14 @@
     if (startDate) body.startDates = [startDate];
 
     if (fd.get('lng') && fd.get('lat')) {
-      body.startLocation = {
+      const locationData = {
         type: 'Point',
         coordinates: [Number(fd.get('lng')), Number(fd.get('lat'))],
         description: fd.get('locationDescription') || 'Tour Start Location',
       };
+      body.startLocation = locationData;
+      // مطلوب لصفحة تفاصيل الجولة (#map data-locations) اللي بترسم tour.locations
+      body.locations = [locationData];
     }
 
     if (!isEdit) {
