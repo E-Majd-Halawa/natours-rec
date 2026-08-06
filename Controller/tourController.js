@@ -57,19 +57,39 @@ exports.aliasTopTours = (req, res, next) => {
 exports.getAllTours = factory.getAll(Tour, { path: 'reviews' });
 exports.getTour = factory.getOne(Tour, { path: 'reviews' });
 // controllers/tourController.js
+// في controllers/tourController.js
+
 exports.createTour = catchAsync(async (req, res, next) => {
-  // إذا كانت البيانات قادمة كـ String بسبب FormData:
-  if (typeof req.body.startLocation === 'string') {
-    req.body.startLocation = JSON.parse(req.body.startLocation);
+  // 💡 ضمان تحويل النص إلى Array لو أُرسل مرشد واحد فقط كـ String
+  if (req.body.guides && !Array.isArray(req.body.guides)) {
+    req.body.guides = [req.body.guides];
   }
 
   const newTour = await Tour.create(req.body);
 
   res.status(201).json({
     status: 'success',
-    data: {
-      data: newTour,
-    },
+    data: { tour: newTour },
+  });
+});
+
+exports.updateTour = catchAsync(async (req, res, next) => {
+  if (req.body.guides && !Array.isArray(req.body.guides)) {
+    req.body.guides = [req.body.guides];
+  }
+
+  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: { tour },
   });
 });
 exports.updateTour = factory.updateOne(Tour);

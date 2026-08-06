@@ -24,7 +24,7 @@ block content
                 svg(viewBox='0 0 1200 60' preserveAspectRatio='none')
                     path(fill='#F5F7F1' d='M0 60 L0 34 L60 20 L140 42 L230 10 L320 38 L410 16 L500 44 L600 22 L700 46 L800 18 L900 40 L1000 14 L1100 38 L1200 24 L1200 60 Z')
         .heading-box
-            span.heading-box__eyebrow= tour.difficulty + ' · ' + tour.duration + '-day tour'
+            span.heading-box__eyebrow= `${tour.difficulty} · ${tour.duration}-day tour`
             h1.heading-primary= `${tour.name} Tour`
             .heading-box__group
                 .heading-box__detail
@@ -126,6 +126,6 @@ block content
 
 block append scripts
     script(src='https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js')
-    script(src='/js/displayMap.js')
+    script(type='module', src='/js/displayMap.js')
     script(src='/js/reviewCarousel.js')
     script(src='/js/addReview.js')
