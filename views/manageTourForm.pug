@@ -73,25 +73,13 @@ block content
                                 p.form__hint No guides available yet.
 
                     .admin-form-section
-                        h3.admin-form-section__title Location
-                        p.form__hint Click anywhere on the map below to set Latitude &amp; Longitude automatically — or type them in and the pin will follow.
-                        .admin-form-grid
-                            .form__group
-                                label.form__label(for='locationDescription') Location name / address
-                                - const locDesc = tour && tour.startLocation ? tour.startLocation.description : ''
-                                input#locationDescription.form__input(type='text', name='locationDescription', placeholder='e.g. Miami, USA', required=!tour, value=locDesc)
+                        h3.admin-form-section__title Locations
+                        p.form__hint Click the map up to 3 times to add locations for this tour (the first one becomes the starting point). Click a marker again to remove it.
 
-                            .form__group
-                                label.form__label(for='lat') Latitude
-                                - const latVal = tour && tour.startLocation && tour.startLocation.coordinates ? tour.startLocation.coordinates[1] : ''
-                                input#lat.form__input(type='number', name='lat', step='any', placeholder='25.7617', required=!tour, value=latVal)
+                        #locationsList.locations-list
 
-                            .form__group
-                                label.form__label(for='lng') Longitude
-                                - const lngVal = tour && tour.startLocation && tour.startLocation.coordinates ? tour.startLocation.coordinates[0] : ''
-                                input#lng.form__input(type='number', name='lng', step='any', placeholder='-80.1918', required=!tour, value=lngVal)
-
-                        #adminMap.admin-map
+                        - const existingLocations = (tour && tour.locations && tour.locations.length) ? tour.locations : []
+                        #adminMap.admin-map(data-existing-locations=`${JSON.stringify(existingLocations)}`)
 
                     .admin-form-section
                         h3.admin-form-section__title Description

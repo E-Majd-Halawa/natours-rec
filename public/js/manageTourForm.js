@@ -9,8 +9,7 @@
     document.getElementById('submitBtn') ||
     form.querySelector('button[type="submit"]');
 
-  const latInput = document.getElementById('lat');
-  const lngInput = document.getElementById('lng');
+  const MAX_LOCATIONS = 3;
 
   function showAlert(type, msg) {
     const existing = document.querySelector('.alert');
@@ -23,61 +22,144 @@
     }, 4000);
   }
 
+  // ------------------------------------------------------------------
+  // Locations (up to 3, added by clicking the map)
+  // ------------------------------------------------------------------
   const mapEl = document.getElementById('adminMap');
-  if (mapEl && typeof L !== 'undefined' && latInput && lngInput) {
-    const startLat = Number(latInput.value) || 20;
-    const startLng = Number(lngInput.value) || 0;
-    const map = L.map('adminMap').setView(
-      [startLat, startLng],
-      latInput.value ? 6 : 2,
-    );
+  const listEl = document.getElementById('locationsList');
+
+  // Each entry: { lat, lng, description, marker }
+  let locations = [];
+  let map = null;
+
+  function renderList() {
+    if (!listEl) return;
+    listEl.innerHTML = '';
+
+    if (!locations.length) {
+      listEl.insertAdjacentHTML(
+        'beforeend',
+        `<p class="form__hint">No locations added yet. Click the map to add one (up to ${MAX_LOCATIONS}).</p>`,
+      );
+      return;
+    }
+
+    locations.forEach((loc, i) => {
+      const row = document.createElement('div');
+      row.className = 'location-item';
+      row.dataset.index = String(i);
+      row.innerHTML = `
+        <span class="location-item__index">${i + 1}</span>
+        <input
+          type="text"
+          class="location-item__desc form__input"
+          placeholder="${i === 0 ? 'Starting point name' : 'Location name'}"
+          value="${loc.description ? loc.description.replace(/"/g, '&quot;') : ''}"
+        />
+        <button type="button" class="location-item__remove" title="Remove">×</button>
+      `;
+
+      row
+        .querySelector('.location-item__desc')
+        .addEventListener('input', (e) => {
+          locations[i].description = e.target.value;
+        });
+
+      row
+        .querySelector('.location-item__remove')
+        .addEventListener('click', () => {
+          removeLocation(i);
+        });
+
+      listEl.appendChild(row);
+    });
+  }
+
+  function renumberMarkers() {
+    locations.forEach((loc, i) => {
+      if (loc.marker) {
+        loc.marker.setTooltipContent(String(i + 1));
+      }
+    });
+  }
+
+  function addLocation(lat, lng, description) {
+    if (locations.length >= MAX_LOCATIONS) {
+      showAlert('error', `You can only add up to ${MAX_LOCATIONS} locations.`);
+      return;
+    }
+
+    const marker = L.marker([lat, lng]).addTo(map);
+    marker.bindTooltip(String(locations.length + 1), {
+      permanent: true,
+      direction: 'top',
+      className: 'location-marker-label',
+    });
+
+    marker.on('click', () => {
+      const idx = locations.findIndex((l) => l.marker === marker);
+      if (idx !== -1) removeLocation(idx);
+    });
+
+    locations.push({ lat, lng, description: description || '', marker });
+    renderList();
+  }
+
+  function removeLocation(index) {
+    const loc = locations[index];
+    if (loc && loc.marker) {
+      map.removeLayer(loc.marker);
+    }
+    locations.splice(index, 1);
+    renumberMarkers();
+    renderList();
+  }
+
+  if (mapEl && typeof L !== 'undefined') {
+    let existingLocations = [];
+    try {
+      existingLocations = JSON.parse(mapEl.dataset.existingLocations || '[]');
+    } catch (e) {
+      existingLocations = [];
+    }
+
+    const firstLoc = existingLocations[0];
+    const startLat = firstLoc ? firstLoc.coordinates[1] : 20;
+    const startLng = firstLoc ? firstLoc.coordinates[0] : 0;
+
+    map = L.map('adminMap').setView([startLat, startLng], firstLoc ? 6 : 2);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors',
     }).addTo(map);
 
-    let marker = null;
-    if (latInput.value && lngInput.value) {
-      marker = L.marker([startLat, startLng]).addTo(map);
-    }
-
-    map.on('click', (e) => {
-      const { lat, lng } = e.latlng;
-      latInput.value = lat.toFixed(6);
-      lngInput.value = lng.toFixed(6);
-      if (marker) {
-        marker.setLatLng(e.latlng);
-      } else {
-        marker = L.marker(e.latlng).addTo(map);
-      }
+    // seed existing locations (edit mode)
+    existingLocations.slice(0, MAX_LOCATIONS).forEach((loc) => {
+      addLocation(loc.coordinates[1], loc.coordinates[0], loc.description);
     });
 
-    function updateMarkerFromInputs() {
-      const lat = Number(latInput.value);
-      const lng = Number(lngInput.value);
-      if (lat && lng) {
-        const newLatLng = [lat, lng];
-        if (marker) {
-          marker.setLatLng(newLatLng);
-        } else {
-          marker = L.marker(newLatLng).addTo(map);
-        }
-        map.panTo(newLatLng);
-      }
-    }
+    map.on('click', (e) => {
+      addLocation(e.latlng.lat, e.latlng.lng, '');
+    });
 
-    latInput.addEventListener('change', updateMarkerFromInputs);
-    lngInput.addEventListener('change', updateMarkerFromInputs);
-
+    renderList();
     setTimeout(() => map.invalidateSize(), 200);
   }
 
+  // ------------------------------------------------------------------
+  // Form submit
+  // ------------------------------------------------------------------
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const tourId = form.dataset.tourId;
     const isEdit = Boolean(tourId);
     const fd = new FormData(form);
+
+    if (!locations.length) {
+      showAlert('error', 'Please add at least one location on the map.');
+      return;
+    }
 
     const body = {
       name: fd.get('name'),
@@ -101,16 +183,15 @@
     const startDate = fd.get('startDate');
     if (startDate) body.startDates = [startDate];
 
-    if (fd.get('lng') && fd.get('lat')) {
-      const locationData = {
-        type: 'Point',
-        coordinates: [Number(fd.get('lng')), Number(fd.get('lat'))],
-        description: fd.get('locationDescription') || 'Tour Start Location',
-      };
-      body.startLocation = locationData;
-      // مطلوب لصفحة تفاصيل الجولة (#map data-locations) اللي بترسم tour.locations
-      body.locations = [locationData];
-    }
+    const locationDocs = locations.map((loc, i) => ({
+      type: 'Point',
+      coordinates: [loc.lng, loc.lat],
+      description:
+        loc.description ||
+        (i === 0 ? 'Tour Start Location' : `Location ${i + 1}`),
+    }));
+    body.startLocation = locationDocs[0];
+    body.locations = locationDocs;
 
     if (!isEdit) {
       body.imageCover = 'tour-pending-cover.jpg';
