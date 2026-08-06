@@ -1,43 +1,56 @@
-(function () {
-  const table = document.querySelector('.admin-table');
-  if (!table) return; // not on the manage-tours page
+const saveTourData = async (data) => {
+  try {
+    // 1) إنشاء الرحلة الأساسية
+    const res = await axios({
+      method: 'POST',
+      url: '/api/v1/tours',
+      data,
+    });
 
-  function showAlert(type, msg) {
-    const existing = document.querySelector('.alert');
-    if (existing) existing.parentElement.removeChild(existing);
-    const markup = `<div class="alert alert--${type}">${msg}</div>`;
-    document.querySelector('body').insertAdjacentHTML('afterbegin', markup);
-    window.setTimeout(() => {
-      const el = document.querySelector('.alert');
-      if (el) el.parentElement.removeChild(el);
-    }, 4000);
-  }
+    if (res.data.status === 'success') {
+      // 💡 قراءة الـ ID بشكل مضمون (سواء كانت _id أو id)
+      const tour = res.data.data.tour || res.data.data.data || res.data.data;
+      const tourId = tour._id || tour.id;
 
-  table.addEventListener('click', async (e) => {
-    const btn = e.target.closest('[data-delete-id]');
-    if (!btn) return;
-
-    const id = btn.dataset.deleteId;
-    const name = btn.dataset.deleteName || 'this tour';
-    if (!window.confirm(`Delete "${name}"? This can't be undone.`)) return;
-
-    try {
-      btn.disabled = true;
-      const res = await fetch(`/api/v1/tours/${id}`, { method: 'DELETE' });
-
-      if (res.status === 204) {
-        const row = btn.closest('tr');
-        row.style.transition = 'opacity .25s';
-        row.style.opacity = '0';
-        setTimeout(() => row.remove(), 250);
-        showAlert('success', 'Tour deleted.');
-      } else {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.message || `Request failed (${res.status})`);
+      if (!tourId) {
+        showAlert('error', 'Tour created but no id returned.');
+        return;
       }
-    } catch (err) {
-      btn.disabled = false;
-      showAlert('error', err.message || 'Could not delete this tour.');
+
+      // 2) رفع الصور (الغلاف والمعرض) إن وجدت
+      const coverInput = document.getElementById('imageCover');
+      const imagesInput = document.getElementById('images');
+
+      const formMedia = new FormData();
+      let hasImages = false;
+
+      if (coverInput && coverInput.files[0]) {
+        formMedia.append('imageCover', coverInput.files[0]);
+        hasImages = true;
+      }
+
+      if (imagesInput && imagesInput.files.length > 0) {
+        Array.from(imagesInput.files).forEach((file) => {
+          formMedia.append('images', file);
+        });
+        hasImages = true;
+      }
+
+      // إذا كان هناك صور، يتم إرسال طلب PATCH لإضافتها للرحلة
+      if (hasImages) {
+        await axios({
+          method: 'PATCH',
+          url: `/api/v1/tours/${tourId}`,
+          data: formMedia,
+        });
+      }
+
+      showAlert('success', 'Tour created successfully!');
+      window.setTimeout(() => {
+        location.assign('/manage-tours');
+      }, 1500);
     }
-  });
-})();
+  } catch (err) {
+    showAlert('error', err.response?.data?.message || 'Something went wrong!');
+  }
+};
