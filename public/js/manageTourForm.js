@@ -4,7 +4,11 @@
   if (!form) return;
 
   const statusEl = document.getElementById('formStatus');
-  const submitBtn = document.getElementById('submitBtn');
+  const submitBtn =
+    document.getElementById('createTourBtn') ||
+    document.getElementById('submitBtn') ||
+    form.querySelector('button[type="submit"]');
+
   const latInput = document.getElementById('lat');
   const lngInput = document.getElementById('lng');
 
@@ -19,9 +23,8 @@
     }, 4000);
   }
 
-  /* ---------- Interactive map: dynamic click & input binding ---------- */
   const mapEl = document.getElementById('adminMap');
-  if (mapEl && typeof L !== 'undefined') {
+  if (mapEl && typeof L !== 'undefined' && latInput && lngInput) {
     const startLat = Number(latInput.value) || 20;
     const startLng = Number(lngInput.value) || 0;
     const map = L.map('adminMap').setView(
@@ -38,7 +41,6 @@
       marker = L.marker([startLat, startLng]).addTo(map);
     }
 
-    // 1) عند النقر على الخريطة -> تحديث خانات الإدخال
     map.on('click', (e) => {
       const { lat, lng } = e.latlng;
       latInput.value = lat.toFixed(6);
@@ -50,7 +52,6 @@
       }
     });
 
-    // 2) إضافة ديناميكية: عند كتابة الخطوط والإحداثيات يدوياً -> تحريك الماركر في الخريطة مباشرة
     function updateMarkerFromInputs() {
       const lat = Number(latInput.value);
       const lng = Number(lngInput.value);
@@ -71,7 +72,6 @@
     setTimeout(() => map.invalidateSize(), 200);
   }
 
-  /* ---------- Form submit ---------- */
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -92,14 +92,14 @@
     const priceDiscount = fd.get('priceDiscount');
     if (priceDiscount) body.priceDiscount = Number(priceDiscount);
 
-    // ربط المرشدين السياحيين المحددين ديناميكياً
     const guidesSelect = document.getElementById('guides');
-    const selectedGuides = [...guidesSelect.selectedOptions].map(
-      (o) => o.value,
-    );
-    if (selectedGuides.length) body.guides = selectedGuides;
+    if (guidesSelect) {
+      const selectedGuides = [...guidesSelect.selectedOptions].map(
+        (o) => o.value,
+      );
+      if (selectedGuides.length) body.guides = selectedGuides;
+    }
 
-    // إرسال موقع البداية والإحداثيات دائماً (في الإنشاء والتعديل)
     const startDate = fd.get('startDate');
     if (startDate) body.startDates = [startDate];
 
@@ -111,17 +111,12 @@
       };
     }
 
-    let imageCoverFile = null;
-    let galleryFiles = [];
-
     if (!isEdit) {
       body.imageCover = 'tour-pending-cover.jpg';
-      imageCoverFile = fd.get('imageCover');
-      galleryFiles = document.getElementById('images').files;
     }
 
-    submitBtn.disabled = true;
-    statusEl.textContent = isEdit ? 'Saving…' : 'Creating tour…';
+    if (submitBtn) submitBtn.disabled = true;
+    if (statusEl) statusEl.textContent = isEdit ? 'Saving…' : 'Creating tour…';
 
     try {
       const res = await axios({
@@ -138,18 +133,17 @@
         throw new Error('Tour created but no id returned.');
       }
 
-      // رفع الصور في حالة الإضافة أو إذا تم اختيار صور جديدة في التعديل
       const coverInput = document.getElementById('imageCover');
       const imagesInput = document.getElementById('images');
 
-      const newCoverFile = coverInput?.files[0];
+      const newCoverFile = coverInput?.files?.[0];
       const newGalleryFiles = imagesInput?.files;
 
       const hasCover = newCoverFile && newCoverFile.size > 0;
       const hasGallery = newGalleryFiles && newGalleryFiles.length > 0;
 
       if (hasCover || hasGallery) {
-        statusEl.textContent = 'Uploading photos…';
+        if (statusEl) statusEl.textContent = 'Uploading photos…';
         const photoForm = new FormData();
         if (hasCover) photoForm.append('imageCover', newCoverFile);
         if (hasGallery)
@@ -165,8 +159,8 @@
       showAlert('success', isEdit ? 'Tour updated!' : 'Tour created!');
       setTimeout(() => (window.location.href = '/manage-tours'), 800);
     } catch (err) {
-      statusEl.textContent = '';
-      submitBtn.disabled = false;
+      if (statusEl) statusEl.textContent = '';
+      if (submitBtn) submitBtn.disabled = false;
       const msg =
         err.response?.data?.message || err.message || 'Something went wrong.';
       showAlert('error', msg);

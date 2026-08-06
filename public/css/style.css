@@ -1840,3 +1840,302 @@ select:focus-visible {
   background: #fee2e2;
   border-color: #fca5a5;
 }
+/* ---------- ADMIN: sectioned form layout ---------- */
+.admin-form-section {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+}
+.admin-form-section:first-child {
+  padding-top: 4px;
+}
+.admin-form-section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 8px;
+}
+.admin-form-section__title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--moss);
+  margin-bottom: 18px;
+}
+.form__input--multi {
+  padding: 8px;
+  height: auto;
+  min-height: 120px;
+}
+.form__input--multi option {
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+.form__input--multi option:checked {
+  background: var(--pine);
+  color: #fff;
+}
+.admin-map {
+  height: 300px;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid var(--line);
+  margin-top: 16px;
+}
+.admin-map .leaflet-control-attribution {
+  font-size: 0.65rem;
+}
+/* ==========================================================================
+   ADMIN TOUR FORM STYLING (Natours Theme)
+   ========================================================================== */
+
+/* 1. Main Container & Header */
+.admin-view {
+  max-width: 114rem;
+  margin: 4rem auto;
+  padding: 0 3rem;
+}
+
+.admin-view__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.btn--ghost {
+  background-color: transparent;
+  color: #777;
+  border: 1px solid #ddd;
+  padding: 0.8rem 1.6rem;
+  border-radius: 100px;
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn--ghost:hover {
+  background-color: #f7f7f7;
+  color: #333;
+  border-color: #bbb;
+}
+
+/* 2. Main Form Card */
+.admin-form-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2.5rem 8rem rgba(0, 0, 0, 0.07);
+  padding: 4.5rem 6rem;
+}
+
+/* 3. Form Sections */
+.admin-form-section {
+  margin-bottom: 4rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.admin-form-section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.admin-form-section__title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #55c57a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.8rem;
+}
+
+.form__hint {
+  font-size: 1.3rem;
+  color: #999;
+  margin-bottom: 2rem;
+}
+
+/* 4. Responsive Grid System */
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+  gap: 2.5rem;
+}
+
+.form__group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form__label {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #444;
+  margin-bottom: 0.8rem;
+}
+
+.form__input {
+  display: block;
+  font-family: inherit;
+  font-size: 1.5rem;
+  color: inherit;
+  padding: 1.25rem 1.75rem;
+  border-radius: 6px;
+  background-color: #f7f7f7;
+  border: 2px solid transparent;
+  width: 100%;
+  transition: all 0.3s;
+}
+
+.form__input:focus {
+  outline: none;
+  background-color: #fff;
+  border-color: #55c57a;
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.05);
+}
+
+textarea.form__input {
+  resize: vertical;
+  min-height: 12rem;
+}
+
+.form__input--file {
+  padding: 1rem;
+  background-color: #fff;
+  border: 1px dashed #ccc;
+  cursor: pointer;
+}
+
+/* 5. Custom Guides Checkbox List */
+.guide-checkbox-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.guide-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.2rem 1.6rem;
+  background-color: #f9fafb;
+  border: 2px solid #eef0f2;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.guide-checkbox-item:hover {
+  border-color: #55c57a;
+  background-color: #f4fbf7;
+}
+
+.guide-checkbox-item__input {
+  display: none; /* Hide default native checkbox */
+}
+
+.guide-checkbox-item__box {
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 2px solid #cbd5e1;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  color: transparent;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.guide-checkbox-item__box svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+/* Checked State Styling */
+.guide-checkbox-item__input:checked + .guide-checkbox-item__box {
+  background-color: #55c57a;
+  border-color: #55c57a;
+  color: #ffffff;
+}
+
+.guide-checkbox-item__input:checked
+  ~ .guide-checkbox-item__info
+  .guide-checkbox-item__name {
+  color: #2e7d32;
+}
+
+.guide-checkbox-item__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.guide-checkbox-item__name {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.guide-checkbox-item__role {
+  font-size: 1.2rem;
+  color: #777;
+  text-transform: capitalize;
+}
+
+/* 6. Leaflet Map Container */
+.admin-map {
+  height: 350px;
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 2rem;
+  border: 1px solid #e2e8f0;
+  z-index: 1; /* Keep leaflet controls below dropdowns/overlays */
+}
+
+/* 7. Action Buttons & Form Status */
+.admin-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.admin-form-status {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #55c57a;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* Responsive Media Queries */
+@media (max-width: 768px) {
+  .admin-form-card {
+    padding: 3rem 2rem;
+  }
+
+  .admin-form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-form-status {
+    text-align: center;
+  }
+}

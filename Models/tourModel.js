@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+
 const tourSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, 'A tour must have a name'],
       unique: true,
-      trim: true /*تحذف المسافات */,
+      trim: true,
       maxlength: [40, 'a tour name must have less or equal then 40 chracters'],
       minlength: [10, 'a tour name must have more or equal then 10 chracters'],
-      // validator:[validator.isAlpha,'tour name must only contain chracters']
     },
     slug: String,
     duration: {
@@ -24,8 +24,7 @@ const tourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A tour must have a difficulty'],
       enum: {
-        // only for strings
-        values: [true, 'easy', 'medium', 'difficult'],
+        values: ['easy', 'medium', 'difficult'],
         message: 'Difficulty is either: easy , medium , difficult',
       },
     },
@@ -48,8 +47,8 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       validate: {
         validator: function (val) {
-          //this only points to current doc on NEW document creation
-          return val < this.price; //should be less than price
+          // this points to current doc on NEW document creation
+          return val === undefined || val < this.price;
         },
         message: 'discount price({VALUE}) should be below regular price',
       },
@@ -57,7 +56,7 @@ const tourSchema = new mongoose.Schema(
     summary: {
       type: String,
       required: [true, 'A tour must have a description'],
-      trim: true /*تحذف المسافات */,
+      trim: true,
     },
     description: {
       type: String,
@@ -78,7 +77,6 @@ const tourSchema = new mongoose.Schema(
       default: false,
     },
     startLocation: {
-      // GeoJSON
       type: {
         type: String,
         default: 'Point',
@@ -100,7 +98,6 @@ const tourSchema = new mongoose.Schema(
         description: String,
       },
     ],
-
     guides: [
       {
         type: mongoose.Schema.ObjectId,
@@ -113,62 +110,35 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   },
 );
-// tourSchema.index({ price: 1 });
+
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
 tourSchema.index({ startLocation: '2dsphere' });
+
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
-//virtual populate
+
+// virtual populate
 tourSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'tour',
   localField: '_id',
 });
-//DOCUMENT MIDDLEWARE : RUN BEFOR .save() , create() not for update
+
+// DOCUMENT MIDDLEWARE
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
-// tourSchema.pre('save', async function (next) {
-//   const User = require('./userModel');
-//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
-//   this.guides = await Promise.all(guidesPromises);
-//   next();
-// });
-// tourSchema.pre('save', function (next) {
-//   console.log('Will save the document...');
 
-//   next();
-// });
-// tourSchema.post('save', function (doc, next) {
-//   console.log(doc);
-//   next();
-// });
-//QUERY MIDDLEWARE
-//find هذه ستعمل فقط على دالة
-// tourSchema.pre('find', function (next) {
-//   this.find({ secretTour: { $ne: true } });
-//   next();
-// });
-
-//findOne هذه ستعمل فقط على دالة ومنطقيا لن نعمل لكل دالة واحدة لذلك نلجأ لحل افضل
-// tourSchema.pre('findOne', function (next) {
-//   this.find({ secretTour: { $ne: true } });
-//   next();
-// });
-//find هذا الحل الافضل لأنه يجمع اي دالة يوجد بها كلمة
+// QUERY MIDDLEWARE
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
   this.start = Date.now();
   next();
 });
-// tourSchema.post(/^find/, function (docs, next) {
-// console.log(`Query took ${Date.now() - this.start} Milliseconds!`);
-// console.log(docs);
-// next();
-// });
+
 tourSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'guides',
@@ -176,12 +146,6 @@ tourSchema.pre(/^find/, function (next) {
   });
   next();
 });
-// AGGREGATION MIDDLEWARE
-// tourSchema.pre('aggregate', function (next) {
-//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-//   console.log(this.pipeline());
 
-//   next();
-// });
 const Tour = mongoose.model('Tour', tourSchema);
 module.exports = Tour;

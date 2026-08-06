@@ -1,25 +1,52 @@
 /* eslint-disable */
-// const mapEl = document.getElementById('map');
 export const displayMap = (mapEl) => {
-  if (mapEl) {
-    const locations = JSON.parse(mapEl.dataset.locations);
-    var map = L.map('map');
+  if (!mapEl) return;
 
-    locations.forEach((loc) => {
-      L.marker([loc.coordinates[1], loc.coordinates[0]])
-        .addTo(map)
-        .bindPopup(`<p>Day ${loc.day}: ${loc.description}</p>`)
-        .openPopup();
-    });
+  const locations = JSON.parse(mapEl.dataset.locations);
 
-    const bounds = L.latLngBounds(
-      locations.map((loc) => [loc.coordinates[1], loc.coordinates[0]]),
-    );
-    map.fitBounds(bounds, { padding: [50, 50] });
+  // 1️⃣ إنشاء الخريطة مع إيقاف التكبير بالسكرول لمنع التعليق أثناء تصفح الصفحة
+  const map = L.map('map', {
+    scrollWheelZoom: false,
+    zoomControl: true,
+  });
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  // 2️⃣ استخدام سيرفر CartoDB السريع جداً لتفادي بطء OpenStreetMap
+  L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    {
       attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+      maxZoom: 19,
+    },
+  ).addTo(map);
+
+  const points = [];
+
+  // 3️⃣ إضافة العلامات (Markers) والنوافذ المنبثقة (Popups)
+  locations.forEach((loc) => {
+    // Leaflet تستقبل [lat, lng] بينما MongoDB يخزنها [lng, lat]
+    const latLng = [loc.coordinates[1], loc.coordinates[0]];
+    points.push(latLng);
+
+    L.marker(latLng)
+      .addTo(map)
+      .bindPopup(`<p>Day ${loc.day}: ${loc.description}</p>`, {
+        autoClose: false,
+        closeOnClick: false,
+        className: 'map-popup',
+      });
+  });
+
+  // 4️⃣ ضبط أبعاد الخريطة لتتسع لجميع النقاط مع هامش مريح
+  if (points.length > 0) {
+    const bounds = L.latLngBounds(points);
+    map.fitBounds(bounds, {
+      padding: [100, 100],
+    });
   }
+
+  // 5️⃣ إعادة إجبار الخريطة على حساب الحجم لتفادي أي مربعات رمادية
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 200);
 };
