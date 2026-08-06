@@ -41,26 +41,3 @@
     }
   });
 })();
-// في الدالة التي تعالج submit الخاص بالفورم
-const form = document.querySelector('.form-tour-data'); // أو اسم الكلاس لديك
-
-if (form) {
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    // 💡 الحل الجذري: جمع كل الـ IDs للمرشدين المختارين في مصفوفة واحدة
-    const guides = Array.from(document.querySelectorAll('.tour-guides-select'))
-      .map((el) => el.value)
-      .filter((val) => val !== ''); // إزالة الخيارات الفارغة
-
-    const formData = {
-      name: document.getElementById('name').value,
-      price: document.getElementById('price').value,
-      // ... باقي الحقول
-      guides: guides, // 👈 إرسالها كمصفوفة أكيدة Array
-    };
-
-    // إرسال formData إلى API (سواء createTour أو updateTour)
-    saveTourData(formData);
-  });
-}
