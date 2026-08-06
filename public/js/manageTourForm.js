@@ -92,13 +92,11 @@
     const priceDiscount = fd.get('priceDiscount');
     if (priceDiscount) body.priceDiscount = Number(priceDiscount);
 
-    const guidesSelect = document.getElementById('guides');
-    if (guidesSelect) {
-      const selectedGuides = [...guidesSelect.selectedOptions].map(
-        (o) => o.value,
-      );
-      if (selectedGuides.length) body.guides = selectedGuides;
-    }
+    const checkedGuides = document.querySelectorAll(
+      'input[name="guides"]:checked',
+    );
+    const selectedGuides = [...checkedGuides].map((cb) => cb.value);
+    if (selectedGuides.length) body.guides = selectedGuides;
 
     const startDate = fd.get('startDate');
     if (startDate) body.startDates = [startDate];
@@ -126,7 +124,12 @@
       });
 
       const data = res.data;
-      const createdDoc = data.data?.doc || data.data?.data || data.data || data;
+      const createdDoc =
+        data.data?.tour ||
+        data.data?.doc ||
+        data.data?.data ||
+        data.data ||
+        data;
       const newTourId = isEdit ? tourId : createdDoc?.id || createdDoc?._id;
 
       if (!isEdit && !newTourId) {

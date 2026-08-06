@@ -92,7 +92,6 @@ exports.updateTour = catchAsync(async (req, res, next) => {
     data: { tour },
   });
 });
-exports.updateTour = factory.updateOne(Tour);
 exports.deleteTour = factory.deleteOne(Tour);
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
