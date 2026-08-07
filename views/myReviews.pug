@@ -15,8 +15,8 @@ block content
           +navItem('/me', 'Settings', 'settings')
           +navItem('/my-tours', 'My bookings', 'briefcase')
           +navItem('/my-reviews', 'My reviews', 'star', true)
-          +navItem('#', 'Billing', 'credit-card')
-        if user.role === 'admin'
+          +navItem('/billing', 'Billing', 'credit-card')
+        if user && user.role === 'admin'
           .admin-nav
             h5.admin-nav__heading Admin
             ul.side-nav
@@ -26,32 +26,45 @@ block content
               +navItem('/manage-bookings', 'Manage bookings', 'briefcase')
 
       .user-view__content
-        .user-view__form-container
-          h2.heading-secondary.ma-bt-md My Reviews
+        .reviews-container
+          .reviews-header
+            h2.heading-secondary My Reviews
+            p.reviews-subtitle View, manage, and track all the tour reviews you have submitted.
 
-          if !reviews || reviews.length === 0
-            p.no-data You haven't written any reviews yet.
-          else
-            table.table-reviews
-              thead
-                tr
-                  th Tour
-                  th Rating
-                  th Review
-                  th Date
-                  th Action
-              tbody
+          - const totalReviews = reviews ? reviews.length : 0
+          - const avgRating = totalReviews ? (reviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews).toFixed(1) : '0.0'
+
+          // --- 1. Metrics Bar ---
+          .reviews-metrics
+            .metric-box
+              span.metric-box__label Total Reviews
+              span.metric-box__value= totalReviews
+            .metric-box
+              span.metric-box__label Average Rating Given
+              span.metric-box__value= `${avgRating} ★`
+
+          // --- 2. Minimalist Reviews List ---
+          .reviews-section
+            h3.reviews-section__title Review History
+
+            if !reviews || reviews.length === 0
+              p.no-data You haven't written any reviews yet.
+            else
+              .reviews-list
                 each review in reviews
-                  tr(data-review-id=review.id)
-                    td= review.tour ? review.tour.name : 'Deleted Tour'
-                    
-                    td
-                      span.rating-stars ⭐ #{review.rating}/5
-                    
-                    td.review-text-cell
-                      p.review-text= review.review
-                    
-                    td= new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                    
-                    td
-                      button.btn.btn--small.btn--danger.btn--delete-user-review(data-review-id=review.id) Delete
+                  .review-card(data-review-id=`${review.id}`)
+                    .review-card__header
+                      .review-card__tour-info
+                        h4.review-card__title= review.tour ? review.tour.name : 'Tour Review'
+                        span.review-card__date= new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                      
+                      .review-card__rating
+                        span.rating-badge= `${review.rating} / 5 ★`
+
+                    .review-card__body
+                      p.review-card__text= review.review
+
+                    .review-card__footer
+                      if review.tour
+                        a.btn-action.btn-action--view(href=`/tour/${review.tour.slug}`) View Tour
+                      button.btn-action.btn-action--delete.btn-delete-review(data-id=`${review.id}`) Delete
