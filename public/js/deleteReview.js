@@ -1,7 +1,7 @@
 // deleteReview.js
 import axios from 'axios';
 // إذا كنت تستخدم مكتبة للتنبيهات مثل showAlert (مثل مشروع Natours):
-// import { showAlert } from './alerts';
+import { showAlert } from './alerts';
 
 export const deleteReview = async (reviewId) => {
   try {

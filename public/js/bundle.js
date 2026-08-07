@@ -193,6 +193,31 @@ const $f25c14890e575cd8$export$7d0f10f273c0438a = async (userId, userRow)=>{
 
 
 
+// deleteReview.js
+
+
+const $dbc9067b79f803d7$export$189a68d831f3e4ec = async (reviewId)=>{
+    try {
+        // 1. إرسال طلب الحذف للـ API
+        const res = await (0, ($parcel$interopDefault($jANz3$axios)))({
+            method: 'DELETE',
+            url: `/api/v1/reviews/${reviewId}`
+        });
+        // في طلبات DELETE الناجحة (204 No Content)، يرجع السيرفر استجابة فارغة
+        if (res.status === 204 || res.data.status === 'success') {
+            alert("\u062A\u0645 \u062D\u0630\u0641 \u0627\u0644\u0645\u0631\u0627\u062C\u0639\u0629 \u0628\u0646\u062C\u0627\u062D!");
+            // 2. إزالة العنصر من الواجهة مباشرة دون إعادة تحميل الصفحة
+            const card = document.querySelector(`.review-card[data-review-id="${reviewId}"]`);
+            if (card) card.remove();
+            else // أو إعادة تحميل الصفحة
+            window.location.reload();
+        }
+    } catch (err) {
+        alert(err.response?.data?.message || "\u062D\u062F\u062B \u062E\u0637\u0623 \u0623\u062B\u0646\u0627\u0621 \u062D\u0630\u0641 \u0627\u0644\u0645\u0631\u0627\u062C\u0639\u0629");
+    }
+};
+
+
 // 1. تحديد الجدول
 const $e18016dbdc1c1791$var$usersTable = document.querySelector('.table-users');
 if ($e18016dbdc1c1791$var$usersTable) $e18016dbdc1c1791$var$usersTable.addEventListener('click', (e)=>{
@@ -341,6 +366,16 @@ if ($e18016dbdc1c1791$var$userReviewsTable) $e18016dbdc1c1791$var$userReviewsTab
             (0, $9872a30d54cb2189$export$de026b00723010c1)('error', err.response?.data?.message || 'Error deleting review!');
         }
     }
+});
+// البحث عن كل أزرار الحذف في الصفحة
+const $e18016dbdc1c1791$var$deleteBtns = document.querySelectorAll('.btn-delete-review');
+if ($e18016dbdc1c1791$var$deleteBtns.length > 0) $e18016dbdc1c1791$var$deleteBtns.forEach((btn)=>{
+    btn.addEventListener('click', (e)=>{
+        // الحصول على ID المراجعة من data-id الموجود في زر الـ Pug
+        const reviewId = e.target.dataset.id;
+        // تأكيد الحذف من المستخدم قبل التنفيذ
+        if (confirm("\u0647\u0644 \u0623\u0646\u062A \u062A\u0623\u0643\u062F \u0645\u0646 \u0623\u0646\u0643 \u062A\u0631\u064A\u062F \u062D\u0630\u0641 \u0647\u0630\u0647 \u0627\u0644\u0645\u0631\u0627\u062C\u0639\u0629\u061F")) (0, $dbc9067b79f803d7$export$189a68d831f3e4ec)(reviewId);
+    });
 });
 
 

@@ -2139,3 +2139,141 @@ textarea.form__input {
     text-align: center;
   }
 }
+/* ---------- RECEIPT MODAL ---------- */
+.receipt-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+.receipt-modal.is-open {
+  display: flex;
+}
+.receipt-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 41, 25, 0.55);
+  backdrop-filter: blur(3px);
+}
+.receipt-modal__box {
+  position: relative;
+  z-index: 2;
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 440px;
+  margin: 20px;
+  box-shadow: 0 2.5rem 8rem rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+.receipt-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #94a3b8;
+  cursor: pointer;
+}
+.receipt-modal__close:hover {
+  color: #1e293b;
+}
+.receipt-printable {
+  padding: 3.2rem 3rem 2.4rem;
+}
+.receipt-printable__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.6rem;
+}
+.receipt-printable__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.receipt-printable__logo {
+  height: 22px;
+}
+.receipt-printable__brand-name {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: #0f172a;
+}
+.receipt-printable__meta {
+  text-align: right;
+}
+.receipt-printable__meta h3 {
+  font-size: 1.3rem;
+  color: #0f172a;
+  margin: 0 0 4px;
+}
+.receipt-printable__invoice-id {
+  font-family: monospace;
+  font-size: 1.2rem;
+  color: #64748b;
+}
+.receipt-printable__divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 1.6rem 0;
+}
+.receipt-printable__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 1.35rem;
+}
+.receipt-printable__label {
+  color: #64748b;
+}
+.receipt-printable__value {
+  color: #1e293b;
+  font-weight: 600;
+  text-align: right;
+}
+.receipt-printable__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+.receipt-modal__actions {
+  display: flex;
+  gap: 12px;
+  padding: 1.6rem 3rem 2.4rem;
+  border-top: 1px solid #f1f5f9;
+}
+.receipt-modal__actions .btn-action {
+  flex: 1;
+  text-align: center;
+}
+
+/* اطبع الفاتورة فقط، إخفي باقي الصفحة عند الطباعة */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .receipt-printable,
+  .receipt-printable * {
+    visibility: visible;
+  }
+  .receipt-modal__box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-shadow: none;
+    max-width: 100%;
+  }
+  .receipt-modal__close,
+  .receipt-modal__actions {
+    display: none !important;
+  }
+}
