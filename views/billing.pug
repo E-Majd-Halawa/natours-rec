@@ -14,8 +14,8 @@ block content
         ul.side-nav
           +navItem('/me', 'Settings', 'settings')
           +navItem('/my-tours', 'My bookings', 'briefcase')
-          +navItem('/my-reviews', 'My reviews', 'star', true)
-          +navItem('/billing', 'Billing', 'credit-card')
+          +navItem('/my-reviews', 'My reviews', 'star')
+          +navItem('/billing', 'Billing', 'credit-card', true)
         if user && user.role === 'admin'
           .admin-nav
             h5.admin-nav__heading Admin
@@ -26,45 +26,49 @@ block content
               +navItem('/manage-bookings', 'Manage bookings', 'briefcase')
 
       .user-view__content
-        .reviews-container
-          .reviews-header
-            h2.heading-secondary My Reviews
-            p.reviews-subtitle View, manage, and track all the tour reviews you have submitted.
+        .billing-container
+          .billing-header
+            h2.heading-secondary Billing History
+            p.billing-subtitle Review your past payments and keep track of every booking invoice.
 
-          - const totalReviews = reviews ? reviews.length : 0
-          - const avgRating = totalReviews ? (reviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews).toFixed(1) : '0.0'
+          - const totalBookings = bookings ? bookings.length : 0
+          - const totalSpent = bookings ? bookings.reduce((acc, b) => acc + (b.price || 0), 0) : 0
+          - const paidCount = bookings ? bookings.filter(b => b.paid !== false).length : 0
 
           // --- 1. Metrics Bar ---
-          .reviews-metrics
+          .billing-metrics
             .metric-box
-              span.metric-box__label Total Reviews
-              span.metric-box__value= totalReviews
+              span.metric-box__label Total Spent
+              span.metric-box__value= `$${totalSpent}`
             .metric-box
-              span.metric-box__label Average Rating Given
-              span.metric-box__value= `${avgRating} ★`
+              span.metric-box__label Total Bookings
+              span.metric-box__value= totalBookings
+            .metric-box
+              span.metric-box__label Paid Invoices
+              span.metric-box__value= paidCount
 
-          // --- 2. Minimalist Reviews List ---
-          .reviews-section
-            h3.reviews-section__title Review History
+          // --- 2. Transactions List ---
+          .billing-section
+            h3.billing-section__title Transaction History
 
-            if !reviews || reviews.length === 0
-              p.no-data You haven't written any reviews yet.
+            if !bookings || bookings.length === 0
+              p.form__hint You don't have any billing history yet.
             else
-              .reviews-list
-                each review in reviews
-                  .review-card(data-review-id=`${review.id}`)
-                    .review-card__header
-                      .review-card__tour-info
-                        h4.review-card__title= review.tour ? review.tour.name : 'Tour Review'
-                        span.review-card__date= new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                      
-                      .review-card__rating
-                        span.rating-badge= `${review.rating} / 5 ★`
+              .billing-list
+                each booking in bookings
+                  .billing-row(data-booking-id=`${booking.id}`)
+                    .billing-row__info
+                      h4.billing-row__title= booking.tour ? booking.tour.name : 'Tour Booking'
+                      .billing-row__meta
+                        span.invoice-id= `#${booking.id.slice(-8).toUpperCase()}`
+                        span.meta-dot •
+                        span= new Date(booking.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
-                    .review-card__body
-                      p.review-card__text= review.review
+                    if booking.paid === false
+                      span.status-pill.status-pill--pending Pending
+                    else
+                      span.status-pill.status-pill--paid Paid
 
-                    .review-card__footer
-                      if review.tour
-                        a.btn-action.btn-action--view(href=`/tour/${review.tour.slug}`) View Tour
-                      button.btn-action.btn-action--delete.btn-delete-review(data-id=`${review.id}`) Delete
+                    span.amount-text= `$${booking.price}`
+
+                    button.btn-receipt(type='button', data-id=`${booking.id}`) View Receipt
