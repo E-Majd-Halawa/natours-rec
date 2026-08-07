@@ -26,7 +26,7 @@ block content
               +navItem('/manage-bookings', 'Manage bookings', 'briefcase')
 
       .user-view__content
-        .billing-container
+        .billing-container(data-user-name=user ? user.name : '', data-user-email=user ? user.email : '')
           .billing-header
             h2.heading-secondary Billing History
             p.billing-subtitle Review your past payments and keep track of every booking invoice.
@@ -56,11 +56,12 @@ block content
             else
               .billing-list
                 each booking in bookings
+                  - const invoiceId = `INV-${booking.id.slice(-8).toUpperCase()}`
                   .billing-row(data-booking-id=`${booking.id}`)
                     .billing-row__info
                       h4.billing-row__title= booking.tour ? booking.tour.name : 'Tour Booking'
                       .billing-row__meta
-                        span.invoice-id= `#${booking.id.slice(-8).toUpperCase()}`
+                        span.invoice-id= `#${invoiceId}`
                         span.meta-dot •
                         span= new Date(booking.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
@@ -71,4 +72,51 @@ block content
 
                     span.amount-text= `$${booking.price}`
 
-                    button.btn-receipt(type='button', data-id=`${booking.id}`) View Receipt
+                    button.btn-receipt(
+                      type='button',
+                      data-invoice=invoiceId,
+                      data-tour=booking.tour ? booking.tour.name : 'Tour Booking',
+                      data-price=booking.price,
+                      data-date=booking.createdAt.toISOString(),
+                      data-paid=booking.paid !== false
+                    ) View Receipt
+
+    // --- Receipt Modal (printable) ---
+    #receiptModal.receipt-modal
+      .receipt-modal__overlay
+      .receipt-modal__box
+        button#receiptCloseX.receipt-modal__close(type='button', aria-label='Close') ×
+        .receipt-printable
+          .receipt-printable__header
+            .receipt-printable__brand
+              img.receipt-printable__logo(src='/img/logo-green.png', alt='Natours')
+              span.receipt-printable__brand-name Natours
+            .receipt-printable__meta
+              h3 Receipt
+              span#receiptInvoiceId.receipt-printable__invoice-id
+          .receipt-printable__divider
+          .receipt-printable__row
+            span.receipt-printable__label Billed to
+            span#receiptCustomerName.receipt-printable__value
+          .receipt-printable__row
+            span.receipt-printable__label Email
+            span#receiptCustomerEmail.receipt-printable__value
+          .receipt-printable__row
+            span.receipt-printable__label Date
+            span#receiptDate.receipt-printable__value
+          .receipt-printable__row
+            span.receipt-printable__label Tour
+            span#receiptTour.receipt-printable__value
+          .receipt-printable__row
+            span.receipt-printable__label Status
+            span#receiptStatus.receipt-printable__value
+          .receipt-printable__divider
+          .receipt-printable__total
+            span Total Paid
+            span#receiptAmount
+        .receipt-modal__actions
+          button#receiptPrintBtn.btn-action.btn-action--view(type='button') Print
+          button#receiptCloseBtn.btn-action(type='button') Close
+
+block append scripts
+  script(src='/js/billing.js')

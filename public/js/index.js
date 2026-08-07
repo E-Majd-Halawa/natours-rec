@@ -211,3 +211,21 @@ if (userReviewsTable) {
     }
   });
 }
+import { deleteReview } from './deleteReview';
+
+// البحث عن كل أزرار الحذف في الصفحة
+const deleteBtns = document.querySelectorAll('.btn-delete-review');
+
+if (deleteBtns.length > 0) {
+  deleteBtns.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      // الحصول على ID المراجعة من data-id الموجود في زر الـ Pug
+      const reviewId = e.target.dataset.id;
+
+      // تأكيد الحذف من المستخدم قبل التنفيذ
+      if (confirm('هل أنت تأكد من أنك تريد حذف هذه المراجعة؟')) {
+        deleteReview(reviewId);
+      }
+    });
+  });
+}
