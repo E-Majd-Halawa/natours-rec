@@ -3,19 +3,6 @@ const tourController = require('../Controller/tourController');
 const authController = require('../Controller/authController');
 const reviewRouter = require('./reviewRoutes');
 const router = express.Router();
-//protect all routes after this middleware
-// router.param('id', tourController.checkID);
-//POST/tour/234kjm/reviews
-//GET/tour/234kjm/reviews
-//GET/tour/234kjm/reviews/897fed
-
-// router
-//   .route('/:tourId/reviews')
-//   .post(
-//     authController.protect,
-//     authController.restrictTo('user'),
-//     reviewController.createReview,
-//   );
 router.use('/:tourId/reviews', reviewRouter);
 router
   .route('/top-5-cheap')

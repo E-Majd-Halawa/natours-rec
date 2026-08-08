@@ -1,6 +1,6 @@
 const catchAsync = require('../utils/catchAsync');
 const Review = require('../Models/reviewModel');
-const factory = require('./handlerFactouy');
+const factory = require('./handlerFactory');
 
 exports.getAllReviews = factory.getAll(Review);
 exports.setTourUserId = (req, res, next) => {
