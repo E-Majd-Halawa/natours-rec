@@ -1,9 +1,8 @@
 extends base
 
 block append head
-    // مكتبة Leaflet لتحديد الموقع على الخريطة مباشرة
+    // نترك ملف الـ CSS فقط في الـ head
     link(rel='stylesheet', href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css')
-    script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js')
 
 block content
     main.main
@@ -103,5 +102,7 @@ block content
                         button#createTourBtn.btn.btn--small.btn--green(type='submit')= tour ? 'Save changes' : 'Create tour'
 
 block append scripts
+    // نقل سكريبت مكتبة Leaflet إلى هنا قبل ملفك الخاص
+    script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js')
     script(src='https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js')
     script(src='/js/manageTourForm.js')
