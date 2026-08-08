@@ -1,7 +1,7 @@
 const Tour = require('./../Models/tourModel.js');
 const catchAsync = require('../utils/catchAsync.js');
 const AppError = require('../utils/appError.js');
-const factory = require('./handlerFactory'); // ✅ تم تصحيح الاسم هنا (Factory بدلاً من Factouy)
+const factory = require('./handlerFactory');
 const sharp = require('sharp');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
@@ -13,7 +13,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// --- 2. دالة مساعدة لرفع الـ Buffer المظغوط مباشرة من Sharp إلى Cloudinary ---
+// --- 2. دالة مساعدة لرفع الـ Buffer المضغوط مباشرة من Sharp إلى Cloudinary ---
 const uploadToCloudinary = (buffer, options) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
@@ -50,7 +50,7 @@ exports.uploadTourImages = upload.fields([
   { name: 'images', maxCount: 3 },
 ]);
 
-// --- 3. معالجة الصور بـ Sharp ورفعها لـ Cloudinary بدلاً من المجلد المحلي ---
+// --- 3. معالجة الصور بـ Sharp ورفعها لـ Cloudinary ---
 exports.resizeTourImages = catchAsync(async (req, res, next) => {
   if (!req.files || (!req.files.imageCover && !req.files.images)) return next();
 
@@ -67,7 +67,6 @@ exports.resizeTourImages = catchAsync(async (req, res, next) => {
       public_id: `tour-${req.params.id || Date.now()}-cover`,
     });
 
-    // يحفظ رابط HTTPS دائم من Cloudinary في قاعدة البيانات
     req.body.imageCover = result.secure_url;
   }
 
@@ -106,6 +105,14 @@ exports.getAllTours = factory.getAll(Tour, { path: 'reviews' });
 exports.getTour = factory.getOne(Tour, { path: 'reviews' });
 
 exports.createTour = catchAsync(async (req, res, next) => {
+  // تحويل النصوص القادمة من FormData إلى Objects/Arrays قبل الحفظ
+  if (typeof req.body.startLocation === 'string') {
+    req.body.startLocation = JSON.parse(req.body.startLocation);
+  }
+  if (typeof req.body.locations === 'string') {
+    req.body.locations = JSON.parse(req.body.locations);
+  }
+
   if (req.body.guides && !Array.isArray(req.body.guides)) {
     req.body.guides = [req.body.guides];
   }
@@ -119,6 +126,14 @@ exports.createTour = catchAsync(async (req, res, next) => {
 });
 
 exports.updateTour = catchAsync(async (req, res, next) => {
+  // تحويل النصوص القادمة من FormData إلى Objects/Arrays قبل التحديث
+  if (typeof req.body.startLocation === 'string') {
+    req.body.startLocation = JSON.parse(req.body.startLocation);
+  }
+  if (typeof req.body.locations === 'string') {
+    req.body.locations = JSON.parse(req.body.locations);
+  }
+
   if (req.body.guides && !Array.isArray(req.body.guides)) {
     req.body.guides = [req.body.guides];
   }
