@@ -357,3 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ضع باقي كود إدارة الخريطة والـ submit هنا بالكامل...
 });
+setTimeout(() => {
+  if (map) map.invalidateSize();
+}, 200);

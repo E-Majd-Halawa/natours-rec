@@ -1,10 +1,8 @@
 extends base
 
 block append head
-    // 1. تضمين Leaflet و Axios معاً في قسم head لضمان توفرهما للـ Mobile و Desktop
+    // وضع CSS الخريطة فقط في الـ head
     link(rel='stylesheet', href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css')
-    script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js')
-    script(src='https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js')
 
 block content
     main.main
@@ -104,4 +102,7 @@ block content
                         button#createTourBtn.btn.btn--small.btn--green(type='submit')= tour ? 'Save changes' : 'Create tour'
 
 block append scripts
+    // تضمين المكتبات بالترتيب الصحيح في الأسفل
+    script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js')
+    script(src='https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js')
     script(src='/js/manageTourForm.js')
