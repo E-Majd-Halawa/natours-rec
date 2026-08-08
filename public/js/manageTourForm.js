@@ -1,4 +1,5 @@
 /* global L, axios */
+import axios from 'axios';
 (function () {
   const form = document.getElementById('tourForm');
   if (!form) return;
@@ -348,4 +349,11 @@ form.addEventListener('submit', async (e) => {
       err.response?.data?.message || err.message || 'Something went wrong.';
     showAlert('error', msg);
   }
+});
+/* global L, axios */
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('tourForm');
+  if (!form) return;
+
+  // ضع باقي كود إدارة الخريطة والـ submit هنا بالكامل...
 });
