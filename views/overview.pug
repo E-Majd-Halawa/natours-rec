@@ -27,12 +27,17 @@ block content
                     data-diff=tour.difficulty
                     data-price=tour.price
                     data-rating=tour.ratingsAverage
-                    data-name=`${tour.name} ${tour.startLocation.description}`.toLowerCase()
+                    data-name=`${tour.name} ${tour.startLocation ? tour.startLocation.description : ''}`.toLowerCase()
                 )
                     a(href=`/tour/${tour.slug}` style='display:contents')
                         .card__header
                             .card__picture
-                                img.card__picture-img(src=`/img/tours/${tour.imageCover}`, alt=tour.name, loading='lazy')
+                                - const isCloudinary = tour.imageCover && tour.imageCover.startsWith('http');
+                                img.card__picture-img(
+                                  src= isCloudinary ? tour.imageCover : `/img/tours/${tour.imageCover}`, 
+                                  alt=tour.name, 
+                                  loading='lazy'
+                                )
                                 .card__picture-overlay &nbsp;
                             .badge-row
                                 span.badge(class=`diff-${tour.difficulty}`)= tour.difficulty
@@ -46,7 +51,7 @@ block content
                             .card__data
                                 svg.card__icon
                                     use(xlink:href='/img/icons.svg#icon-map-pin')
-                                span= tour.startLocation.description
+                                span= tour.startLocation ? tour.startLocation.description : 'Location TBA'
                             .card__data
                                 svg.card__icon
                                     use(xlink:href='/img/icons.svg#icon-calendar')
@@ -54,7 +59,7 @@ block content
                             .card__data
                                 svg.card__icon
                                     use(xlink:href='/img/icons.svg#icon-flag')
-                                span= `${tour.locations.length} Stops`
+                                span= `${tour.locations ? tour.locations.length : 0} Stops`
                             .card__data
                                 svg.card__icon
                                     use(xlink:href='/img/icons.svg#icon-user')
