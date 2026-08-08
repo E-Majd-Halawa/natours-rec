@@ -35,14 +35,13 @@ router.route('/distances/:latlng/unit/:unit').get(tourController.getDistance);
 //tours-distance?distance=223&center=-40,45&unit=mi
 //tours-distance/223/center/-40,45/unit/mi
 
-router
-  .route('/')
-  .get(tourController.getAllTours)
-  .post(
-    authController.protect,
-    authController.restrictTo('admin', 'lead-guide'),
-    tourController.createTour,
-  );
+router.route('/').get(tourController.getAllTours).post(
+  authController.protect,
+  authController.restrictTo('admin', 'lead-guide'),
+  tourController.uploadTourImages, // 👈 أضف هذه
+  tourController.resizeTourImages, // 👈 وأضف هذه
+  tourController.createTour,
+);
 router.use(authController.protect);
 router.use(authController.restrictTo('admin'));
 router

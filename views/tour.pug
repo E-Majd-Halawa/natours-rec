@@ -16,7 +16,9 @@ block content
     section.section-header
         .header__hero
             .header__hero-overlay &nbsp;
-            img.header__hero-img(src=`/img/tours/${tour.imageCover}`, alt=tour.name)
+            //- فحص إذا كانت الصورة رابطاً كاملاً أو اسماً محلياً
+            - const coverImg = tour.imageCover.startsWith('http') ? tour.imageCover : `/img/tours/${tour.imageCover}`
+            img.header__hero-img(src=coverImg, alt=tour.name)
             .ridge
                 svg(viewBox='0 0 1200 60' preserveAspectRatio='none')
                     path(fill='#F5F7F1' d='M0 60 L0 34 L60 20 L140 42 L230 10 L320 38 L410 16 L500 44 L600 22 L700 46 L800 18 L900 40 L1000 14 L1100 38 L1200 24 L1200 60 Z')
@@ -47,7 +49,8 @@ block content
                 h2.heading-secondary.ma-bt-lg Your tour guides
                 each guide in tour.guides
                     .overview-box__detail
-                        img.overview-box__img(src=`/img/users/${guide.photo}`, alt=guide.name)
+                        - const guidePhoto = guide.photo.startsWith('http') ? guide.photo : `/img/users/${guide.photo}`
+                        img.overview-box__img(src=guidePhoto, alt=guide.name)
                         if guide.role==='lead-guide'
                             span.overview-box__label Lead guide
                         if guide.role==='guide'
@@ -62,8 +65,9 @@ block content
 
     section.section-pictures
         each img, i in tour.images
+            - const imgSrc = img.startsWith('http') ? img : `/img/tours/${img}`
             .picture-box
-                img.picture-box__img(src=`/img/tours/${img}`, alt=`${tour.name} ${i+1}`, class=`picture-box__img--${i+1}`, loading='lazy')
+                img.picture-box__img(src=imgSrc, alt=`${tour.name} ${i+1}`, class=`picture-box__img--${i+1}`, loading='lazy')
 
     section.section-map
         h2.heading-secondary.ma-bt-lg.section-map__heading Route
@@ -78,7 +82,6 @@ block content
                     +reviewCard(review)
             button.reviews__btn.reviews__btn--right(aria-label='Next review') ›
 
-        // --- إضافة نموذج المراجعة لليوزر المسجل ---
         if user
             .add-review-box
                 h2.heading-secondary.ma-bt-md Leave your review
@@ -102,9 +105,11 @@ block content
             .cta__img.cta__img--logo
                 img(src='/img/logo-white.png', alt='Natours logo')
             if tour.images && tour.images[1]
-                img.cta__img.cta__img--1(src=`/img/tours/${tour.images[1]}`, alt='Tour picture')
+                - const ctaImg1 = tour.images[1].startsWith('http') ? tour.images[1] : `/img/tours/${tour.images[1]}`
+                img.cta__img.cta__img--1(src=ctaImg1, alt='Tour picture')
             if tour.images && tour.images[2]
-                img.cta__img.cta__img--2(src=`/img/tours/${tour.images[2]}`, alt='Tour picture')
+                - const ctaImg2 = tour.images[2].startsWith('http') ? tour.images[2] : `/img/tours/${tour.images[2]}`
+                img.cta__img.cta__img--2(src=ctaImg2, alt='Tour picture')
             .cta__content
                 h2.heading-secondary What are you waiting for?
                 p.cta__text= `${tour.duration} days. 1 adventure. Infinite memories. Make it yours today!`
@@ -116,5 +121,4 @@ block content
 block append scripts
     script(src='/js/reviewCarousel.js')
     script(src='https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js')
-    script(src='/js/reviewCarousel.js')
     script(src='/js/addReview.js')
