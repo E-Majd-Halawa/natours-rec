@@ -24,19 +24,43 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: [
-        "'self'",
-        "'unsafe-inline'",
-        'https://cdnjs.cloudflare.com',
-        'https://cdn.jsdelivr.net',
-      ],
-      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      // 🚨 هنا المهم: السماح بتحميل الصور من Cloudinary والـ Localhost
-      imgSrc: ["'self'", 'data:', 'blob:', 'https://res.cloudinary.com'],
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", 'https://unpkg.com', 'https://js.stripe.com'],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          'https://unpkg.com',
+          'https://fonts.googleapis.com',
+        ],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        connectSrc: [
+          "'self'",
+          'https://*.openstreetmap.org',
+          'https://unpkg.com',
+          'https://api.stripe.com',
+          ...(process.env.NODE_ENV === 'development'
+            ? ['ws://localhost:1234', 'ws://127.0.0.1:1234']
+            : []),
+        ],
+        frameSrc: [
+          "'self'",
+          'https://js.stripe.com',
+          'https://hooks.stripe.com',
+        ],
+        imgSrc: [
+          "'self'",
+          'data:',
+          'blob:',
+          'https://*.openstreetmap.org',
+          'https://*.tile.openstreetmap.org',
+          'https://unpkg.com',
+        ],
+        workerSrc: ["'self'", 'blob:'],
+        childSrc: ["'self'", 'blob:'],
+      },
     },
   }),
 );
