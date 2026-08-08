@@ -21,15 +21,21 @@ block content
                         each tour in tours
                             tr(data-id=`${tour.id}`)
                                 td
-                                    img.admin-table__thumb(src=`/img/tours/${tour.imageCover}`, alt=tour.name)
+                                    - const isCloudinary = tour.imageCover && tour.imageCover.startsWith('http');
+                                    - const imgSrc = isCloudinary ? tour.imageCover : `/img/tours/${tour.imageCover || 'default.jpg'}`;
+                                    img.admin-table__thumb(
+                                        src=imgSrc, 
+                                        alt=tour.name,
+                                        onerror="this.src='/img/tours/default.jpg'"
+                                    )
                                 td
                                     span.admin-table__name= tour.name
-                                    span.admin-table__sub= tour.startLocation.description
+                                    span.admin-table__sub= tour.startLocation && tour.startLocation.description ? tour.startLocation.description : ''
                                 td
                                     span.badge(class=`diff-${tour.difficulty}`)= tour.difficulty
                                 td= `${tour.duration}d`
                                 td.mono= `$${tour.price}`
-                                td.mono= `${tour.ratingsAverage} (${tour.ratingsQuantity})`
+                                td.mono= `${tour.ratingsAverage || 0} (${tour.ratingsQuantity || 0})`
                                 td.admin-table__actions
                                     a.admin-icon-btn(href=`/tour/${tour.slug}`, title='View on site', target='_blank')
                                         svg
