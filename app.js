@@ -41,8 +41,14 @@ app.use(
           'https://*.openstreetmap.org',
           'https://unpkg.com',
           'https://api.stripe.com',
+          // السماح بالاتصال من أي مكان في بيئة التطوير (سواء Localhost أو IP الجوال)
           ...(process.env.NODE_ENV === 'development'
-            ? ['ws://localhost:1234', 'ws://127.0.0.1:1234']
+            ? [
+                'ws:',
+                'http://localhost:*',
+                'http://127.0.0.1:*',
+                'http://192.168.*:*',
+              ]
             : []),
         ],
         frameSrc: [
@@ -54,6 +60,7 @@ app.use(
           "'self'",
           'data:',
           'blob:',
+          'https://res.cloudinary.com', // 🟢 إضـافـة Cloudinary لظهور الصور
           'https://*.openstreetmap.org',
           'https://*.tile.openstreetmap.org',
           'https://unpkg.com',
@@ -62,6 +69,8 @@ app.use(
         childSrc: ["'self'", 'blob:'],
       },
     },
+    // 🟢 منع حظر الموارد عبر الأجهزة المختلفة في الشبكة (الجوال)
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
   }),
 );
 app.use(compression());
