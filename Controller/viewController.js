@@ -163,3 +163,8 @@ exports.getBilling = catchAsync(async (req, res, next) => {
     bookings,
   });
 });
+exports.getAbout = (req, res) => {
+  res.status(200).render('about', {
+    title: 'About Us',
+  });
+};
