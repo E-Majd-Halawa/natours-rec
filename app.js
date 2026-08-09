@@ -65,9 +65,8 @@ app.use(
           "'self'",
           'data:',
           'blob:',
-          'https://res.cloudinary.com', // 🟢 إضـافـة Cloudinary لظهور الصور
-          'https://*.openstreetmap.org',
-          'https://*.tile.openstreetmap.org',
+          'https://res.cloudinary.com',
+          'https://*.basemaps.cartocdn.com',
           'https://unpkg.com',
         ],
         workerSrc: ["'self'", 'blob:'],
