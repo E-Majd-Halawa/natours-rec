@@ -1,101 +1,136 @@
 extends base
 
+mixin navItem(link, text, icon, active)
+  li(class=`${active ? 'side-nav--active' : ''}`)
+    a(href=`${link}`)
+      svg
+        use(xlink:href=`/img/icons.svg#icon-${icon}`)
+      | #{text}
+
 block content
   main.main
     .user-view
+      nav.user-view__menu
+        ul.side-nav
+          +navItem('/me', 'Settings', 'settings', false)
+          +navItem('/my-tours', 'My bookings', 'briefcase', false)
+          +navItem('/my-reviews', 'My reviews', 'star', false)
+          +navItem('/billing', 'Billing', 'credit-card', false)
+
+        - if (user && user.role === 'admin')
+          .admin-nav
+            h5.admin-nav__heading Admin
+            ul.side-nav
+              +navItem('/manage-tours', 'Manage tours', 'map', false)
+              +navItem('/manage-users', 'Manage users', 'users', false)
+              +navItem('/manage-reviews', 'Manage reviews', 'star', false)
+              +navItem('/manage-bookings', 'Manage bookings', 'briefcase', false)
+              +navItem('/manage-applications', 'Manage Applications', 'file-text', true)
+
       .user-view__content
         .user-view__form-container
-          h2.heading-secondary.ma-bt-md Manage Applications
+          h2.heading-secondary.ma-bt-md Manage Guide Applications
 
           if applications && applications.length > 0
-            table.table.applications-table
+            table.table.table--applications(style="width: 100%; border-collapse: collapse; margin-top: 2rem;")
               thead
-                tr
-                  th Applicant Name
-                  th Email
-                  th CV / Resume
-                  th Action
+                tr(style="background-color: #f7f7f7; text-align: left; border-bottom: 2px solid #e0e0e0;")
+                  th(style="padding: 1.2rem;") User
+                  th(style="padding: 1.2rem;") Email
+                  th(style="padding: 1.2rem;") Current Role
+                  th(style="padding: 1.2rem;") CV Document
+                  th(style="padding: 1.2rem; text-align: center;") Actions
+
               tbody
-                each user in applications
-                  tr
-                    td= user.name
-                    td= user.email
-                    td
-                      if user.cvUrl || user.cv
-                        a.btn-text(href=`${user.cvUrl || user.cv}` target='_blank' rel='noopener noreferrer') Download CV
+                each app in applications
+                  tr(style="border-bottom: 1px solid #eee;")
+                    td(style="padding: 1.2rem; display: flex; align-items: center; gap: 1rem;")
+                      img(src=`/img/users/${app.photo || 'default.jpg'}`, alt=`${app.name}`, style="width: 4rem; height: 4rem; border-radius: 50%; object-fit: cover;")
+                      span(style="font-weight: 600;")= app.name
+                    
+                    td(style="padding: 1.2rem;")= app.email
+                    
+                    td(style="padding: 1.2rem;")
+                      span.badge(style="padding: 0.4rem 0.8rem; border-radius: 10px; background-color: #e3f2fd; color: #1976d2; font-size: 1.2rem; font-weight: 600;")= app.role
+                    
+                    td(style="padding: 1.2rem;")
+                      if app.cvUrl || app.cv
+                        a.btn-text(href=`${app.cvUrl || app.cv}`, target="_blank", style="color: #55c57a; font-weight: 600; text-decoration: underline;") View CV 📄
                       else
-                        span.text-muted No CV
-                    td
-                      div.action-buttons
-                        button.btn.btn--small.btn--green.btn--accept-app(data-user-id=user._id) Accept
-                        button.btn.btn--small.btn--red.btn--delete-app(data-user-id=user._id) Reject
-
+                        span(style="color: #999;") No file
+                    
+                    td(style="padding: 1.2rem; text-align: center;")
+                      div(style="display: flex; gap: 0.8rem; justify-content: center; align-items: center;")
+                        if app.role !== 'guide' && app.role !== 'lead-guide'
+                          button.btn.btn--small.btn--green.btn--update-role(data-user-id=`${app._id}`, data-role="guide") Approve Guide
+                          button.btn.btn--small.btn--delete-app(data-user-id=`${app._id}`, style="background-color: #ff5252; color: #fff;") Reject Application
+                        else
+                          span(style="color: #28a745; font-weight: 600; margin-right: 0.5rem;") Approved ✓
+                          button.btn.btn--small.btn--update-role(data-user-id=`${app._id}`, data-role="user", style="background-color: #e74c3c; color: #fff;") Demote to User
           else
-            .no-applications
-              p.text-muted No pending guide applications at the moment.
+            p.text-center(style="font-size: 1.6rem; color: #777; margin-top: 3rem;") No guide applications found right now.
 
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js')
   script.
-    document.addEventListener('DOMContentLoaded', () => {
-      const applicationsTable = document.querySelector('.applications-table');
-      if (!applicationsTable) return;
+    document.addEventListener('click', async (e) => {
+      // 1) تغيير الصلاحية (قبول / تنزيل)
+      const roleBtn = e.target.closest('.btn--update-role');
+      if (roleBtn) {
+        e.preventDefault();
+        const userId = roleBtn.dataset.userId;
+        const targetRole = roleBtn.dataset.role;
 
-      applicationsTable.addEventListener('click', async (e) => {
-        // 1) القبول وتحديث صلاحية المستخدم لـ Guide
-        const acceptBtn = e.target.closest('.btn--accept-app');
-        if (acceptBtn) {
-          e.preventDefault();
-          const userId = acceptBtn.dataset.userId;
+        const confirmMsg = targetRole === 'guide'
+          ? 'Are you sure you want to approve this applicant as a guide?'
+          : 'Are you sure you want to demote this guide back to a regular user?';
 
-          if (!confirm('Are you sure you want to approve this applicant as a guide?')) return;
+        if (!confirm(confirmMsg)) return;
 
-          try {
-            acceptBtn.disabled = true;
-            acceptBtn.textContent = 'Accepting...';
+        try {
+          roleBtn.disabled = true;
+          roleBtn.textContent = 'Updating...';
 
-            const res = await axios({
-              method: 'PATCH',
-              url: `/api/v1/users/${userId}`,
-              data: {
-                role: 'guide'
-              }
-            });
+          const res = await axios({
+            method: 'PATCH',
+            url: `/api/v1/users/${userId}`,
+            data: { role: targetRole }
+          });
 
-            if (res.data.status === 'success') {
-              alert('User has been successfully updated to Guide!');
-              window.location.reload();
-            }
-          } catch (err) {
-            acceptBtn.disabled = false;
-            acceptBtn.textContent = 'Accept';
-            alert(`Error: ${err.response?.data?.message || err.message}`);
+          if (res.data.status === 'success') {
+            window.location.reload();
           }
+        } catch (err) {
+          roleBtn.disabled = false;
+          roleBtn.textContent = targetRole === 'guide' ? 'Approve Guide' : 'Demote to User';
+          alert(`Error: ${err.response?.data?.message || err.message}`);
         }
+        return;
+      }
 
-        // 2) الرفض وحذف طلب التقديم عبر الـ Endpoint المخصص
-        const deleteBtn = e.target.closest('.btn--delete-app');
-        if (deleteBtn) {
-          e.preventDefault();
-          const userId = deleteBtn.dataset.userId;
+      // 2) رفض وحذف الطلب عبر ה-Endpoint المخصص
+      const deleteBtn = e.target.closest('.btn--delete-app');
+      if (deleteBtn) {
+        e.preventDefault();
+        const userId = deleteBtn.dataset.userId;
 
-          if (!confirm('Are you sure you want to reject and delete this application?')) return;
+        if (!confirm('Are you sure you want to reject and delete this application?')) return;
 
-          try {
-            deleteBtn.disabled = true;
-            deleteBtn.textContent = 'Rejecting...';
+        try {
+          deleteBtn.disabled = true;
+          deleteBtn.textContent = 'Rejecting...';
 
-            const res = await axios({
-              method: 'DELETE',
-              url: `/api/v1/users/delete-application/${userId}`
-            });
+          const res = await axios({
+            method: 'DELETE',
+            url: `/api/v1/users/delete-application/${userId}`
+          });
 
-            if (res.data.status === 'success') {
-              window.location.reload();
-            }
-          } catch (err) {
-            deleteBtn.disabled = false;
-            deleteBtn.textContent = 'Reject';
-            alert(`Error: ${err.response?.data?.message || err.message}`);
+          if (res.data.status === 'success') {
+            window.location.reload();
           }
+        } catch (err) {
+          deleteBtn.disabled = false;
+          deleteBtn.textContent = 'Reject Application';
+          alert(`Error: ${err.response?.data?.message || err.message}`);
         }
-      });
+      }
     });
