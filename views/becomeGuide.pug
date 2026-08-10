@@ -1,0 +1,58 @@
+extends base
+
+block content
+  section.section-header
+    .header__hero
+      .header__hero-overlay &nbsp;
+      img.header__hero-img(src='/img/tours/tour-2-cover.jpg', alt='Become a guide')
+      .ridge
+        svg(viewBox='0 0 1200 60' preserveAspectRatio='none')
+          path(fill='#F5F7F1' d='M0 60 L0 34 L60 20 L140 42 L230 10 L320 38 L410 16 L500 44 L600 22 L700 46 L800 18 L900 40 L1000 14 L1100 38 L1200 24 L1200 60 Z')
+    .heading-box
+      span.heading-box__eyebrow Join Our Team
+      h1.heading-primary Become a Tour Guide
+      .heading-box__group
+        .heading-box__detail
+          svg.heading-box__icon
+            use(xlink:href='/img/icons.svg#icon-user')
+          span.heading-box__text Share your passion with explorers
+
+  .user-view(style='grid-template-columns: 1fr; max-width: 800px; margin: 40px auto;')
+    .user-view__content
+      .user-view__form-container
+        h2.heading-secondary.ma-bt-md Application Form
+        p.auth__hint Lead adventures, build your community, and earn income doing what you love. Fill out the application below.
+
+        form.form.form--become-guide
+          .form__group--float
+            input#name.form__input(type='text', placeholder=' ', value=`${user ? user.name : ''}`, required)
+            label.form__label(for='name') Full Name
+
+          .form__group--float
+            input#email.form__input(type='email', placeholder=' ', value=`${user ? user.email : ''}`, required)
+            label.form__label(for='email') Email Address
+
+          .form__group--float
+            input#phone.form__input(type='tel', placeholder=' ', required)
+            label.form__label(for='phone') Phone Number
+
+          .form__group--float
+            input#experienceYears.form__input(type='number', min='0', placeholder=' ', required)
+            label.form__label(for='experienceYears') Years of Experience
+
+          .form__group--float
+            textarea#bio.form__input(rows='4', placeholder=' ', style='height: auto; padding-top: 24px;', required)
+            label.form__label(for='bio') Brief Bio & Specialties
+
+          .form__group--float
+            input#portfolioLink.form__input(type='url', placeholder=' ')
+            label.form__label(for='portfolioLink') Portfolio / LinkedIn / Website (Optional)
+
+          .form__group(style='margin-bottom: 24px;')
+            label.form__label(style='margin-bottom: 8px; font-weight: 500;') Attach Resume / Certificates (Optional)
+            .form__photo-upload
+              input#cv.form__upload(type='file', accept='.pdf,.doc,.docx')
+              label.form__upload-label(for='cv') Choose File (PDF/DOC)
+
+          .form__group.right
+            button.btn.btn--green Submit Application

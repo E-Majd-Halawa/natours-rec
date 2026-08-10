@@ -75,6 +75,12 @@ router.get(
   authController.restrictTo('admin'),
   viewController.getManageBookings,
 );
+// إضافة مسار عرض صفحة Tbeome a guide
 router.get('/billing', authController.protect, viewController.getBilling);
 router.get('/my-reviews', authController.protect, viewController.getMyReviews);
+router.get(
+  '/become-a-guide',
+  authController.isLoggedIn,
+  viewController.getBecomeGuideForm,
+);
 module.exports = router;
