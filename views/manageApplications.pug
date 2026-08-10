@@ -60,42 +60,49 @@ block content
                         span(style="color: #999;") No file
                     
                     td(style="padding: 1.2rem; text-align: center;")
-                      div(style="display: flex; gap: 0.8rem; justify-content: center;")
+                      div(style="display: flex; gap: 0.8rem; justify-content: center; align-items: center;")
                         if app.role !== 'guide' && app.role !== 'lead-guide'
-                          button.btn.btn--small.btn--green.btn--approve-guide(data-user-id=`${app._id}`) Approve Guide
+                          button.btn.btn--small.btn--green.btn--update-role(data-user-id=`${app._id}`, data-role="guide") Approve Guide
                         else
-                          span(style="color: #28a745; font-weight: 600;") Approved ✓
+                          span(style="color: #28a745; font-weight: 600; margin-right: 0.5rem;") Approved ✓
+                          button.btn.btn--small.btn--red.btn--update-role(data-user-id=`${app._id}`, data-role="user", style="background-color: #eb4d4b; color: #fff;") Demote to User
           else
             p.text-center(style="font-size: 1.6rem; color: #777; margin-top: 3rem;") No guide applications found right now.
 
-  // مكتبة axios + السكريبت المنظم
+  // Axios + Script التعامل مع التغيير بين Guide و User
   script(src='https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js')
   script.
     document.addEventListener('click', async (e) => {
-      const approveBtn = e.target.closest('.btn--approve-guide');
-      if (!approveBtn) return;
+      const btn = e.target.closest('.btn--update-role');
+      if (!btn) return;
 
       e.preventDefault();
 
-      const userId = approveBtn.dataset.userId;
-      if (!confirm('Are you sure you want to approve this applicant as a guide?')) return;
+      const userId = btn.dataset.userId;
+      const targetRole = btn.dataset.role;
+
+      const confirmMessage = targetRole === 'guide'
+        ? 'Are you sure you want to approve this applicant as a guide?'
+        : 'Are you sure you want to demote this guide back to a regular user?';
+
+      if (!confirm(confirmMessage)) return;
 
       try {
-        approveBtn.disabled = true;
-        approveBtn.textContent = 'Approving...';
+        btn.disabled = true;
+        btn.textContent = 'Updating...';
 
         const res = await axios({
           method: 'PATCH',
           url: `/api/v1/users/${userId}`,
-          data: { role: 'guide' }
+          data: { role: targetRole }
         });
 
         if (res.data.status === 'success') {
           window.location.reload();
         }
       } catch (err) {
-        approveBtn.disabled = false;
-        approveBtn.textContent = 'Approve Guide';
+        btn.disabled = false;
+        btn.textContent = targetRole === 'guide' ? 'Approve Guide' : 'Demote to User';
 
         const errorMsg = err.response?.data?.message || err.message;
         alert(`Error: ${errorMsg}`);
