@@ -204,3 +204,27 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 exports.getAllUsers = factory.getAll(User);
 exports.getUser = factory.getOne(User);
 exports.deleteUser = factory.deleteOne(User);
+// دالة رفض وحذف طلب التقديم لمرشد
+exports.rejectApplication = catchAsync(async (req, res, next) => {
+  const updatedUser = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      $unset: { cv: 1, cvUrl: 1 }, // حذف حقول الـ CV نهائياً من MongoDB
+    },
+    {
+      new: true,
+      runValidators: false, // تعطيل الـ Validators لتفادي أي خطأ في حقول أخرى
+    },
+  );
+
+  if (!updatedUser) {
+    return next(new AppError('No user found with that ID', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: updatedUser,
+    },
+  });
+});

@@ -2277,3 +2277,14 @@ textarea.form__input {
     display: none !important;
   }
 }
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+}
+.btn--red {
+  background-color: #eb4d4b;
+  color: #fff;
+}
+.btn--red:hover {
+  background-color: #ff5252;
+}

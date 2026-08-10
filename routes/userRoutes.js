@@ -44,5 +44,10 @@ router
   .get(userController.getUser)
   .patch(userController.updateUser) // الآن أصبحت محمية 100% للأدمن فقط
   .delete(userController.deleteUser);
-
+router.delete(
+  '/delete-application/:id',
+  authController.protect,
+  authController.restrictTo('admin'),
+  userController.rejectApplication,
+);
 module.exports = router;
