@@ -83,4 +83,10 @@ router.get(
   authController.isLoggedIn,
   viewController.getBecomeGuideForm,
 );
+router.get(
+  '/manage-applications',
+  authController.protect,
+  authController.restrictTo('admin'),
+  viewController.getManageApplications,
+);
 module.exports = router;

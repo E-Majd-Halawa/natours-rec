@@ -4,7 +4,7 @@ block content
   section.section-header
     .header__hero
       .header__hero-overlay &nbsp;
-      img.header__hero-img(src='/img/tours/tour-2-cover.jpg', alt='Become a guide')
+      img.header__hero-img(src='/img/users/become_guide.jpg', alt='Become a guide')
       .ridge
         svg(viewBox='0 0 1200 60' preserveAspectRatio='none')
           path(fill='#F5F7F1' d='M0 60 L0 34 L60 20 L140 42 L230 10 L320 38 L410 16 L500 44 L600 22 L700 46 L800 18 L900 40 L1000 14 L1100 38 L1200 24 L1200 60 Z')
@@ -48,11 +48,11 @@ block content
             input#portfolioLink.form__input(type='url', placeholder=' ')
             label.form__label(for='portfolioLink') Portfolio / LinkedIn / Website (Optional)
 
-          .form__group(style='margin-bottom: 24px;')
-            label.form__label(style='margin-bottom: 8px; font-weight: 500;') Attach Resume / Certificates (Optional)
+          .form__group.ma-bt-md
+            label.form__label Attach Resume / Certificates (Optional)
             .form__photo-upload
-              input#cv.form__upload(type='file', accept='.pdf,.doc,.docx')
-              label.form__upload-label(for='cv') Choose File (PDF/DOC)
-
+                input#cv.form__upload(type='file', name='cv', accept='.pdf,.doc,.docx')
+                label.form__upload-label(for='cv') Choose File (PDF/DOC)
+            p#file-name-display(style='margin-top: 8px; font-size: 1.4rem; color: #55c57a; font-weight: 600;')
           .form__group.right
             button.btn.btn--green Submit Application

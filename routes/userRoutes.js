@@ -1,47 +1,48 @@
 const express = require('express');
 const authController = require('../Controller/authController');
 const userController = require('../Controller/userController');
-const reviewcontroller = require('../Controller/reviewController');
-const { route } = require('./reviewRoutes');
+
 const router = express.Router();
-router.route('/signup').post(authController.signup);
-router.route('/login').post(authController.login);
-router.route('/forgetPassword').post(authController.forgetPassword);
-router.route('/resetPassword/:token').patch(authController.resetPassword);
 
-router
-  .route('/updatePassword')
-  .patch(authController.protect, authController.updatePassword);
-router.route('/me').get(
-  authController.protect,
+// 1) المسارات العامة (Public Routes - لا تتطلب تسجيل دخول)
+router.post('/signup', authController.signup);
+router.post('/login', authController.login);
+router.post('/forgetPassword', authController.forgetPassword);
+router.patch('/resetPassword/:token', authController.resetPassword);
 
-  userController.getMe,
-  userController.getUser,
+// 2) تطبيق حماية تسجيل الدخول على كل المسارات التالية
+router.use(authController.protect);
+
+// مسارات المستخدم الحالي (Logged-in User Routes)
+router.get('/me', userController.getMe, userController.getUser);
+router.patch('/updatePassword', authController.updatePassword);
+router.patch(
+  '/updateMe',
+  userController.uploadUserPhoto,
+  userController.resizeUserPhoto,
+  userController.updateMe,
 );
-router
-  .route('/updateMe')
-  .patch(
-    authController.protect,
-    userController.uploadUserPhoto,
-    userController.resizeUserPhoto,
-    userController.updateMe,
-  );
-router
-  .route('/deleteMe')
-  .delete(authController.protect, userController.deleteMe);
+router.delete('/deleteMe', userController.deleteMe);
+
+// تقديم طلب المرشد (رفع الـ CV)
+router.post(
+  '/become-guide',
+  userController.uploadCV,
+  userController.becomeGuide,
+);
+
+// 3) المسارات الخاصة بالأدمن فقط (Restricted to Admin Only)
+router.use(authController.restrictTo('admin'));
+
 router
   .route('/')
-  .get(authController.protect, userController.getAllUsers)
+  .get(userController.getAllUsers)
   .post(userController.creatUser);
+
 router
-  .route(`/:id`)
+  .route('/:id')
   .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(
-    authController.protect,
-    authController.restrictTo('admin'),
-    userController.deleteUser,
-  );
-router.post('/signup', authController.signup);
+  .patch(userController.updateUser) // الآن أصبحت محمية 100% للأدمن فقط
+  .delete(userController.deleteUser);
 
 module.exports = router;

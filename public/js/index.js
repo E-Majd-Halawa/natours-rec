@@ -6,7 +6,10 @@ import { bookTour } from './stripe';
 import { signup } from './signup';
 import { showAlert } from './alerts';
 import { deleteUser } from './manageUsers';
+import { initBecomeGuide } from './becomeGuide';
 
+// تشغيل الدالة
+initBecomeGuide();
 // 1. تحديد الجدول
 const usersTable = document.querySelector('.table-users');
 
@@ -225,6 +228,41 @@ if (deleteBtns.length > 0) {
       // تأكيد الحذف من المستخدم قبل التنفيذ
       if (confirm('هل أنت تأكد من أنك تريد حذف هذه المراجعة؟')) {
         deleteReview(reviewId);
+      }
+    });
+  });
+}
+// البحث عن زر قبول المرشد وتفعيل الحدث
+const approveBtn = document.querySelectorAll('.btn--approve-guide');
+
+if (approveBtn.length > 0) {
+  approveBtn.forEach((btn) => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const userId = e.target.dataset.userId;
+
+      if (!confirm('هل أنت تأكد من قبول هذا المتقدم وتحويله إلى مرشد؟')) return;
+
+      try {
+        // إرسال طلب PATCH لتحديث دور المستخدم إلى guide
+        const res = await axios({
+          method: 'PATCH',
+          url: `/api/v1/users/${userId}`,
+          data: {
+            role: 'guide',
+          },
+        });
+
+        if (res.data.status === 'success') {
+          alert('تم قبول المرشد بنجاح! 🎉');
+          window.location.reload(); // إعادة تحميل الصفحة لرؤية التحديث
+        }
+      } catch (err) {
+        alert(
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : 'حدث خطأ أثناء الترقية!',
+        );
       }
     });
   });

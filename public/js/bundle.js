@@ -123,6 +123,26 @@ const $677963a1596aa7ea$export$f558026a994b6051 = async (data, type)=>{
         (0, $9872a30d54cb2189$export$de026b00723010c1)('error', err.message);
     }
 };
+document.addEventListener('click', async (e)=>{
+    if (e.target.classList.contains('btn--approve-guide')) {
+        const userId = e.target.dataset.userId;
+        try {
+            const res = await axios({
+                method: 'PATCH',
+                url: `/api/v1/users/${userId}`,
+                data: {
+                    role: 'guide'
+                }
+            });
+            if (res.data.status === 'success') {
+                alert("\u062A\u0645 \u062A\u0631\u0642\u064A\u0629 \u0627\u0644\u0645\u0633\u062A\u062E\u062F\u0645 \u0625\u0644\u0649 \u0645\u0631\u0634\u062F \u0628\u0646\u062C\u0627\u062D! \uD83C\uDF89");
+                window.location.reload();
+            }
+        } catch (err) {
+            alert(err.response ? err.response.data.message : "\u062D\u062F\u062B \u062E\u0637\u0623 \u0623\u062B\u0646\u0627\u0621 \u0627\u0644\u062A\u0631\u0642\u064A\u0629!");
+        }
+    }
+});
 
 
 /* eslint-disable */ 
@@ -193,6 +213,58 @@ const $f25c14890e575cd8$export$7d0f10f273c0438a = async (userId, userRow)=>{
 
 
 
+
+const $055f4e6a5a02f42f$export$dccf1e4d1cb5d95e = ()=>{
+    const guideForm = document.querySelector('.form--become-guide');
+    const cvInput = document.getElementById('cv');
+    const label = document.querySelector('.form__upload-label');
+    // 1. إظهار اسم الملف فور اختياره
+    if (cvInput && label) cvInput.addEventListener('change', (e)=>{
+        const file = e.target.files[0];
+        if (file) {
+            label.textContent = `Selected: ${file.name}`;
+            label.style.color = '#55c57a';
+        } else {
+            label.textContent = 'Choose File (PDF/DOC)';
+            label.style.color = 'inherit';
+        }
+    });
+    // 2. إرسال النموذج لـ API
+    if (guideForm) guideForm.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const submitBtn = guideForm.querySelector('button');
+        submitBtn.textContent = 'Submitting...';
+        const form = new FormData();
+        form.append('name', document.getElementById('name').value);
+        form.append('email', document.getElementById('email').value);
+        form.append('phone', document.getElementById('phone').value);
+        form.append('experienceYears', document.getElementById('experienceYears').value);
+        form.append('bio', document.getElementById('bio').value);
+        form.append('portfolioLink', document.getElementById('portfolioLink').value);
+        const cvFile = cvInput?.files[0];
+        if (cvFile) form.append('cv', cvFile);
+        try {
+            const res = await (0, ($parcel$interopDefault($jANz3$axios)))({
+                method: 'POST',
+                url: '/api/v1/users/become-guide',
+                data: form
+            });
+            if (res.data.status === 'success') {
+                (0, $9872a30d54cb2189$export$de026b00723010c1)('success', 'Application submitted successfully! We will review it shortly.');
+                window.setTimeout(()=>{
+                    location.assign('/');
+                }, 2000);
+            }
+        } catch (err) {
+            (0, $9872a30d54cb2189$export$de026b00723010c1)('error', err.response?.data?.message || 'Error submitting application!');
+        } finally{
+            submitBtn.textContent = 'Submit Application';
+        }
+    });
+};
+
+
+
 // deleteReview.js
 
 
@@ -218,6 +290,8 @@ const $dbc9067b79f803d7$export$189a68d831f3e4ec = async (reviewId)=>{
 };
 
 
+// تشغيل الدالة
+(0, $055f4e6a5a02f42f$export$dccf1e4d1cb5d95e)();
 // 1. تحديد الجدول
 const $e18016dbdc1c1791$var$usersTable = document.querySelector('.table-users');
 if ($e18016dbdc1c1791$var$usersTable) $e18016dbdc1c1791$var$usersTable.addEventListener('click', (e)=>{
@@ -375,6 +449,31 @@ if ($e18016dbdc1c1791$var$deleteBtns.length > 0) $e18016dbdc1c1791$var$deleteBtn
         const reviewId = e.target.dataset.id;
         // تأكيد الحذف من المستخدم قبل التنفيذ
         if (confirm("\u0647\u0644 \u0623\u0646\u062A \u062A\u0623\u0643\u062F \u0645\u0646 \u0623\u0646\u0643 \u062A\u0631\u064A\u062F \u062D\u0630\u0641 \u0647\u0630\u0647 \u0627\u0644\u0645\u0631\u0627\u062C\u0639\u0629\u061F")) (0, $dbc9067b79f803d7$export$189a68d831f3e4ec)(reviewId);
+    });
+});
+// البحث عن زر قبول المرشد وتفعيل الحدث
+const $e18016dbdc1c1791$var$approveBtn = document.querySelectorAll('.btn--approve-guide');
+if ($e18016dbdc1c1791$var$approveBtn.length > 0) $e18016dbdc1c1791$var$approveBtn.forEach((btn)=>{
+    btn.addEventListener('click', async (e)=>{
+        e.preventDefault();
+        const userId = e.target.dataset.userId;
+        if (!confirm("\u0647\u0644 \u0623\u0646\u062A \u062A\u0623\u0643\u062F \u0645\u0646 \u0642\u0628\u0648\u0644 \u0647\u0630\u0627 \u0627\u0644\u0645\u062A\u0642\u062F\u0645 \u0648\u062A\u062D\u0648\u064A\u0644\u0647 \u0625\u0644\u0649 \u0645\u0631\u0634\u062F\u061F")) return;
+        try {
+            // إرسال طلب PATCH لتحديث دور المستخدم إلى guide
+            const res = await (0, ($parcel$interopDefault($jANz3$axios)))({
+                method: 'PATCH',
+                url: `/api/v1/users/${userId}`,
+                data: {
+                    role: 'guide'
+                }
+            });
+            if (res.data.status === 'success') {
+                alert("\u062A\u0645 \u0642\u0628\u0648\u0644 \u0627\u0644\u0645\u0631\u0634\u062F \u0628\u0646\u062C\u0627\u062D! \uD83C\uDF89");
+                window.location.reload(); // إعادة تحميل الصفحة لرؤية التحديث
+            }
+        } catch (err) {
+            alert(err.response && err.response.data.message ? err.response.data.message : "\u062D\u062F\u062B \u062E\u0637\u0623 \u0623\u062B\u0646\u0627\u0621 \u0627\u0644\u062A\u0631\u0642\u064A\u0629!");
+        }
     });
 });
 

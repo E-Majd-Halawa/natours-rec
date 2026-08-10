@@ -28,3 +28,27 @@ export const updateSettings = async (data, type) => {
     showAlert('error', err.message);
   }
 };
+document.addEventListener('click', async (e) => {
+  if (e.target.classList.contains('btn--approve-guide')) {
+    const userId = e.target.dataset.userId;
+
+    try {
+      const res = await axios({
+        method: 'PATCH',
+        url: `/api/v1/users/${userId}`,
+        data: {
+          role: 'guide',
+        },
+      });
+
+      if (res.data.status === 'success') {
+        alert('تم ترقية المستخدم إلى مرشد بنجاح! 🎉');
+        window.location.reload();
+      }
+    } catch (err) {
+      alert(
+        err.response ? err.response.data.message : 'حدث خطأ أثناء الترقية!',
+      );
+    }
+  }
+});

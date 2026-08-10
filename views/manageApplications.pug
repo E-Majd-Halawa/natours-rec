@@ -1,0 +1,103 @@
+extends base
+
+mixin navItem(link, text, icon, active)
+  li(class=`${active ? 'side-nav--active' : ''}`)
+    a(href=`${link}`)
+      svg
+        use(xlink:href=`/img/icons.svg#icon-${icon}`)
+      | #{text}
+
+block content
+  main.main
+    .user-view
+      nav.user-view__menu
+        ul.side-nav
+          +navItem('/me', 'Settings', 'settings', false)
+          +navItem('/my-tours', 'My bookings', 'briefcase', false)
+          +navItem('/my-reviews', 'My reviews', 'star', false)
+          +navItem('/billing', 'Billing', 'credit-card', false)
+
+        - if (user && user.role === 'admin')
+          .admin-nav
+            h5.admin-nav__heading Admin
+            ul.side-nav
+              +navItem('/manage-tours', 'Manage tours', 'map', false)
+              +navItem('/manage-users', 'Manage users', 'users', false)
+              +navItem('/manage-reviews', 'Manage reviews', 'star', false)
+              +navItem('/manage-bookings', 'Manage bookings', 'briefcase', false)
+              +navItem('/manage-applications', 'Manage Applications', 'file-text', true)
+
+      .user-view__content
+        .user-view__form-container
+          h2.heading-secondary.ma-bt-md Manage Guide Applications
+
+          if applications && applications.length > 0
+            table.table.table--applications(style="width: 100%; border-collapse: collapse; margin-top: 2rem;")
+              thead
+                tr(style="background-color: #f7f7f7; text-align: left; border-bottom: 2px solid #e0e0e0;")
+                  th(style="padding: 1.2rem;") User
+                  th(style="padding: 1.2rem;") Email
+                  th(style="padding: 1.2rem;") Current Role
+                  th(style="padding: 1.2rem;") CV Document
+                  th(style="padding: 1.2rem; text-align: center;") Actions
+
+              tbody
+                each app in applications
+                  tr(style="border-bottom: 1px solid #eee;")
+                    td(style="padding: 1.2rem; display: flex; align-items: center; gap: 1rem;")
+                      img(src=`/img/users/${app.photo || 'default.jpg'}`, alt=`${app.name}`, style="width: 4rem; height: 4rem; border-radius: 50%; object-fit: cover;")
+                      span(style="font-weight: 600;")= app.name
+                    
+                    td(style="padding: 1.2rem;")= app.email
+                    
+                    td(style="padding: 1.2rem;")
+                      span.badge(style="padding: 0.4rem 0.8rem; border-radius: 10px; background-color: #e3f2fd; color: #1976d2; font-size: 1.2rem; font-weight: 600;")= app.role
+                    
+                    td(style="padding: 1.2rem;")
+                      if app.cvUrl || app.cv
+                        a.btn-text(href=`${app.cvUrl || app.cv}`, target="_blank", style="color: #55c57a; font-weight: 600; text-decoration: underline;") View CV 📄
+                      else
+                        span(style="color: #999;") No file
+                    
+                    td(style="padding: 1.2rem; text-align: center;")
+                      div(style="display: flex; gap: 0.8rem; justify-content: center;")
+                        if app.role !== 'guide' && app.role !== 'lead-guide'
+                          button.btn.btn--small.btn--green.btn--approve-guide(data-user-id=`${app._id}`) Approve Guide
+                        else
+                          span(style="color: #28a745; font-weight: 600;") Approved ✓
+          else
+            p.text-center(style="font-size: 1.6rem; color: #777; margin-top: 3rem;") No guide applications found right now.
+
+  // مكتبة axios + السكريبت المنظم
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js')
+  script.
+    document.addEventListener('click', async (e) => {
+      const approveBtn = e.target.closest('.btn--approve-guide');
+      if (!approveBtn) return;
+
+      e.preventDefault();
+
+      const userId = approveBtn.dataset.userId;
+      if (!confirm('Are you sure you want to approve this applicant as a guide?')) return;
+
+      try {
+        approveBtn.disabled = true;
+        approveBtn.textContent = 'Approving...';
+
+        const res = await axios({
+          method: 'PATCH',
+          url: `/api/v1/users/${userId}`,
+          data: { role: 'guide' }
+        });
+
+        if (res.data.status === 'success') {
+          window.location.reload();
+        }
+      } catch (err) {
+        approveBtn.disabled = false;
+        approveBtn.textContent = 'Approve Guide';
+
+        const errorMsg = err.response?.data?.message || err.message;
+        alert(`Error: ${errorMsg}`);
+      }
+    });
