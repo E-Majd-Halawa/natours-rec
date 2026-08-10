@@ -63,48 +63,76 @@ block content
                       div(style="display: flex; gap: 0.8rem; justify-content: center; align-items: center;")
                         if app.role !== 'guide' && app.role !== 'lead-guide'
                           button.btn.btn--small.btn--green.btn--update-role(data-user-id=`${app._id}`, data-role="guide") Approve Guide
+                          button.btn.btn--small.btn--delete-app(data-user-id=`${app._id}`, style="background-color: #ff5252; color: #fff;") Reject Application
                         else
                           span(style="color: #28a745; font-weight: 600; margin-right: 0.5rem;") Approved ✓
-                          button.btn.btn--small.btn--red.btn--update-role(data-user-id=`${app._id}`, data-role="user", style="background-color: #eb4d4b; color: #fff;") Demote to User
+                          button.btn.btn--small.btn--update-role(data-user-id=`${app._id}`, data-role="user", style="background-color: #e74c3c; color: #fff;") Demote to User
           else
             p.text-center(style="font-size: 1.6rem; color: #777; margin-top: 3rem;") No guide applications found right now.
 
-  // Axios + Script التعامل مع التغيير بين Guide و User
   script(src='https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js')
   script.
     document.addEventListener('click', async (e) => {
-      const btn = e.target.closest('.btn--update-role');
-      if (!btn) return;
+      // 1) معالجة القبول / التنزيل (Role Change)
+      const roleBtn = e.target.closest('.btn--update-role');
+      if (roleBtn) {
+        e.preventDefault();
+        const userId = roleBtn.dataset.userId;
+        const targetRole = roleBtn.dataset.role;
 
-      e.preventDefault();
+        const confirmMsg = targetRole === 'guide'
+          ? 'Are you sure you want to approve this applicant as a guide?'
+          : 'Are you sure you want to demote this guide back to a regular user?';
 
-      const userId = btn.dataset.userId;
-      const targetRole = btn.dataset.role;
+        if (!confirm(confirmMsg)) return;
 
-      const confirmMessage = targetRole === 'guide'
-        ? 'Are you sure you want to approve this applicant as a guide?'
-        : 'Are you sure you want to demote this guide back to a regular user?';
+        try {
+          roleBtn.disabled = true;
+          roleBtn.textContent = 'Updating...';
 
-      if (!confirm(confirmMessage)) return;
+          const res = await axios({
+            method: 'PATCH',
+            url: `/api/v1/users/${userId}`,
+            data: { role: targetRole }
+          });
 
-      try {
-        btn.disabled = true;
-        btn.textContent = 'Updating...';
-
-        const res = await axios({
-          method: 'PATCH',
-          url: `/api/v1/users/${userId}`,
-          data: { role: targetRole }
-        });
-
-        if (res.data.status === 'success') {
-          window.location.reload();
+          if (res.data.status === 'success') {
+            window.location.reload();
+          }
+        } catch (err) {
+          roleBtn.disabled = false;
+          roleBtn.textContent = targetRole === 'guide' ? 'Approve Guide' : 'Demote to User';
+          alert(`Error: ${err.response?.data?.message || err.message}`);
         }
-      } catch (err) {
-        btn.disabled = false;
-        btn.textContent = targetRole === 'guide' ? 'Approve Guide' : 'Demote to User';
+        return;
+      }
 
-        const errorMsg = err.response?.data?.message || err.message;
-        alert(`Error: ${errorMsg}`);
+      // 2) معالجة رفض/حذف الطلب (إزالة ملف الـ CV)
+      const deleteBtn = e.target.closest('.btn--delete-app');
+      if (deleteBtn) {
+        e.preventDefault();
+        const userId = deleteBtn.dataset.userId;
+
+        if (!confirm('Are you sure you want to reject and delete this application?')) return;
+
+        try {
+          deleteBtn.disabled = true;
+          deleteBtn.textContent = 'Rejecting...';
+
+          // تفريغ حقول الـ CV لإلغاء الطلب
+          const res = await axios({
+            method: 'PATCH',
+            url: `/api/v1/users/${userId}`,
+            data: { cv: null, cvUrl: null }
+          });
+
+          if (res.data.status === 'success') {
+            window.location.reload();
+          }
+        } catch (err) {
+          deleteBtn.disabled = false;
+          deleteBtn.textContent = 'Reject Application';
+          alert(`Error: ${err.response?.data?.message || err.message}`);
+        }
       }
     });
