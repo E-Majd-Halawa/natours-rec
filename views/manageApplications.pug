@@ -73,7 +73,7 @@ block content
   script(src='https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js')
   script.
     document.addEventListener('click', async (e) => {
-      // 1) معالجة القبول / التنزيل (Role Change)
+      // 1) تغيير الصلاحية (قبول / تنزيل)
       const roleBtn = e.target.closest('.btn--update-role');
       if (roleBtn) {
         e.preventDefault();
@@ -107,7 +107,7 @@ block content
         return;
       }
 
-      // 2) معالجة رفض/حذف الطلب (إزالة ملف الـ CV)
+      // 2) رفض وحذف الطلب (حذف الـ CV نهائياً)
       const deleteBtn = e.target.closest('.btn--delete-app');
       if (deleteBtn) {
         e.preventDefault();
@@ -119,7 +119,6 @@ block content
           deleteBtn.disabled = true;
           deleteBtn.textContent = 'Rejecting...';
 
-          // تفريغ حقول الـ CV لإلغاء الطلب
           const res = await axios({
             method: 'PATCH',
             url: `/api/v1/users/${userId}`,
