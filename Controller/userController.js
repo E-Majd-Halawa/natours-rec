@@ -137,7 +137,9 @@ exports.creatUser = (req, res) => {
   });
 };
 
-// دالة استقبال طلب التقديم لمرشد
+// ==========================================
+// 5) دالة استقبال طلب التقديم لمرشد (becomeGuide)
+// ==========================================
 exports.becomeGuide = catchAsync(async (req, res, next) => {
   if (!req.file) {
     return next(new AppError('Please upload your CV document!', 400));
@@ -145,47 +147,12 @@ exports.becomeGuide = catchAsync(async (req, res, next) => {
 
   const cvUrl = req.file.path;
 
-  // حفظ الـ CV في قاعدة البيانات
-  exports.updateUser = catchAsync(async (req, res, next) => {
-    // 1) إعداد البيانات المراد تحديثها
-    const filteredBody = { ...req.body };
-
-    // 2) إذا تم إرسال cv أو cvUrl كقيمة فارغة أو null، نستخدم $unset لمسح الحقل من MongoDB
-    let updateQuery = { $set: filteredBody };
-
-    if (
-      req.body.cv === '' ||
-      req.body.cv === null ||
-      req.body.cvUrl === '' ||
-      req.body.cvUrl === null
-    ) {
-      updateQuery = {
-        $set: filteredBody,
-        $unset: { cv: 1, cvUrl: 1 }, // يحذف الحقل نهائياً من الوثيقة في MongoDB
-      };
-    }
-
-    // 3) تحديث المستخدم
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      updateQuery,
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
-
-    if (!updatedUser) {
-      return next(new AppError('No user found with that ID', 404));
-    }
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user: updatedUser,
-      },
-    });
-  });
+  // حفظ الـ CV ورابطه للمستخدم الحالي
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    { cv: cvUrl, cvUrl: cvUrl },
+    { new: true, runValidators: true },
+  );
 
   res.status(200).json({
     status: 'success',
@@ -196,8 +163,44 @@ exports.becomeGuide = catchAsync(async (req, res, next) => {
   });
 });
 
-// مسارات الأدمن عبر الـ Factory
+// ==========================================
+// 6) دالة الأدمن لتحديث بيانات أي مستخدم / حذف طلب الـ CV (updateUser)
+// ==========================================
+exports.updateUser = catchAsync(async (req, res, next) => {
+  const filteredBody = { ...req.body };
+  let updateQuery = { $set: filteredBody };
+
+  // إذا تم إرسال cv أو cvUrl كقيمة فارغة أو null، يتم عمل $unset لحذف الملف من قاعدة البيانات
+  if (
+    req.body.cv === '' ||
+    req.body.cv === null ||
+    req.body.cvUrl === '' ||
+    req.body.cvUrl === null
+  ) {
+    updateQuery = {
+      $set: filteredBody,
+      $unset: { cv: 1, cvUrl: 1 },
+    };
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(req.params.id, updateQuery, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!updatedUser) {
+    return next(new AppError('No user found with that ID', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: updatedUser,
+    },
+  });
+});
+
+// مسارات الأدمن الأخرى عبر الـ Factory
 exports.getAllUsers = factory.getAll(User);
 exports.getUser = factory.getOne(User);
-exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
