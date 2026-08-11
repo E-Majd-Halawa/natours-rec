@@ -1,0 +1,48 @@
+extends base
+
+mixin featureCard(icon, title, text)
+  .app-feature-card
+    .app-feature-card__icon
+      svg
+        use(xlink:href=`/img/icons.svg#icon-${icon}`)
+    h3.app-feature-card__title= title
+    p.app-feature-card__text= text
+
+block content
+  main.main
+    .apps-page
+      .apps-hero
+        .apps-hero__badge 🚀 Coming Soon
+        h1.heading-primary Mobile Apps under Construction
+        p.apps-hero__subtext
+          | We are currently building native iOS and Android apps to give you the ultimate experience on the go. Stay tuned!
+
+        .apps-preview
+          .apps-preview__box
+            svg.apps-preview__icon
+              use(xlink:href='/img/icons.svg#icon-smartphone')
+            span.apps-preview__label iOS App
+            span.apps-preview__status In Development
+          
+          .apps-preview__box
+            svg.apps-preview__icon
+              use(xlink:href='/img/icons.svg#icon-smartphone')
+            span.apps-preview__label Android App
+            span.apps-preview__status In Development
+
+        .apps-subscribe
+          p.apps-subscribe__title Want to be the first to know when we launch?
+          form.apps-subscribe__form#app-notify-form
+            input.apps-subscribe__input#notify-email(type='email', placeholder='Enter your email address', required)
+            button.btn.btn--green(type='submit') Notify Me
+
+      section.apps-features
+        h2.heading-secondary.ma-bt-lg What to expect from our mobile app
+
+        .apps-features__grid
+          +featureCard('map', 'Offline Access', 'Download your booked tours and itineraries to access them even without cellular connection.')
+          +featureCard('bell', 'Instant Notifications', 'Get real-time alerts about booking confirmations, schedule changes, and special deals.')
+          +featureCard('star', 'Exclusive Deals', 'Access app-only discounts and early-bird reservations directly from your pocket.')
+
+      .apps-footer-note
+        a.btn-text(href='/') &larr; Back to Home Page

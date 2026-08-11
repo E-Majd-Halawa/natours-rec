@@ -187,3 +187,8 @@ exports.getManageApplications = catchAsync(async (req, res, next) => {
     applications,
   });
 });
+exports.getDownloadApps = (req, res) => {
+  res.status(200).render('downloadApps', {
+    title: 'Download Mobile Apps',
+  });
+};

@@ -89,4 +89,5 @@ router.get(
   authController.restrictTo('admin'),
   viewController.getManageApplications,
 );
+router.get('/download-apps', viewController.getDownloadApps);
 module.exports = router;

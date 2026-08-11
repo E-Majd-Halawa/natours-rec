@@ -2288,3 +2288,175 @@ textarea.form__input {
 .btn--red:hover {
   background-color: #ff5252;
 }
+/* Apps Page Custom Styles */
+.apps-page {
+  max-width: 114rem;
+  margin: 0 auto;
+  padding: 4rem 2rem 8rem 2rem;
+}
+
+.apps-hero {
+  text-align: center;
+  background-color: #fff;
+  padding: 5rem 3rem;
+  border-radius: 15px;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.07);
+  margin-bottom: 5rem;
+}
+
+.apps-hero__badge {
+  display: inline-block;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 0.6rem 1.6rem;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.apps-hero__subtext {
+  font-size: 1.8rem;
+  color: #666;
+  max-width: 65rem;
+  margin: 1.5rem auto 4rem auto;
+  line-height: 1.6;
+}
+
+.apps-preview {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 4rem;
+  flex-wrap: wrap;
+}
+
+.apps-preview__box {
+  background: #f9f9f9;
+  border: 2px dashed #ddd;
+  padding: 2.5rem 4rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 220px;
+  transition: all 0.3s ease;
+}
+
+.apps-preview__box:hover {
+  border-color: #55c57a;
+  transform: translateY(-3px);
+}
+
+.apps-preview__icon {
+  height: 4rem;
+  width: 4rem;
+  fill: #55c57a;
+  margin-bottom: 1rem;
+}
+
+.apps-preview__label {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.apps-preview__status {
+  font-size: 1.2rem;
+  color: #e67e22;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+/* Form Styles */
+.apps-subscribe {
+  background-color: #f7f7f7;
+  padding: 3rem;
+  border-radius: 10px;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.apps-subscribe__title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 1.5rem;
+}
+
+.apps-subscribe__form {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.apps-subscribe__input {
+  padding: 1.2rem 1.8rem;
+  font-size: 1.4rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 70%;
+  outline: none;
+}
+
+.apps-subscribe__input:focus {
+  border-color: #55c57a;
+}
+
+/* Features Grid */
+.apps-features {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.apps-features__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr));
+  gap: 3rem;
+  margin-top: 3rem;
+}
+
+.app-feature-card {
+  background: #fff;
+  padding: 3rem;
+  border-radius: 10px;
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.app-feature-card__icon {
+  background: #eef9f2;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 2rem auto;
+}
+
+.app-feature-card__icon svg {
+  width: 3rem;
+  height: 3rem;
+  fill: #55c57a;
+}
+
+.app-feature-card__title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.app-feature-card__text {
+  font-size: 1.4rem;
+  color: #777;
+  line-height: 1.6;
+}
+
+.apps-footer-note {
+  text-align: center;
+  margin-top: 3rem;
+}
