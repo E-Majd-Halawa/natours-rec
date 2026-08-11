@@ -1,0 +1,88 @@
+extends base
+
+mixin contactCard(icon, title, detail, link)
+  .contact-card
+    .contact-card__icon
+      svg
+        use(xlink:href=`/img/icons.svg#icon-${icon}`)
+    h3.contact-card__title= title
+    if link
+      a.contact-card__link(href=link target='_blank')= detail
+    else
+      p.contact-card__detail= detail
+
+block content
+  main.main
+    .contact-container
+      .contact-header
+        h1.heading-primary Contact Us
+        p.contact-header__subtext
+          | Have questions, feedback, or need help with a booking? Send us a message and our team will get back to you shortly.
+
+      .contact-content
+        //- بطاقات معلومات التواصل
+        .contact-info
+          +contactCard('mail', 'Email Us', 'support@natours.com', 'mailto:support@natours.com')
+          +contactCard('phone', 'Call Us', '+1 (555) 000-1234', 'tel:+15550001234')
+          +contactCard('map-pin', 'Location', 'San Francisco, CA, USA')
+
+        //- فورم إرسال الرسالة
+        .contact-form-box
+          h2.heading-secondary.ma-bt-md Send a Message
+          form.form.form-contact#contact-form
+            .form__group--float
+              input#name.form__input(type='text', placeholder=' ', required, name='name', value=`${user ? user.name : ''}`)
+              label.form__label(for='name') Your Name
+            
+            .form__group--float
+              input#email.form__input(type='email', placeholder=' ', required, name='email', value=`${user ? user.email : ''}`)
+              label.form__label(for='email') Email Address
+            
+            .form__group--float
+              input#subject.form__input(type='text', placeholder=' ', required, name='subject')
+              label.form__label(for='subject') Subject
+
+            .form__group--float
+              textarea#message.form__input(rows='5', placeholder=' ', required, name='message', style='resize: vertical; min-height: 120px;')
+              label.form__label(for='message') Your Message
+
+            .form__group.right
+              button.btn.btn--green.btn--send-message(type='submit') Send Message 🚀
+
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js')
+  script.
+    document.addEventListener('DOMContentLoaded', () => {
+      const contactForm = document.getElementById('contact-form');
+      if (!contactForm) return;
+
+      contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const subject = document.getElementById('subject').value;
+        const message = document.getElementById('message').value;
+        const submitBtn = contactForm.querySelector('.btn--send-message');
+
+        try {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending...';
+
+          const res = await axios({
+            method: 'POST',
+            url: '/api/v1/contact',
+            data: { name, email, subject, message }
+          });
+
+          if (res.data.status === 'success') {
+            alert('Thank you! Your message has been sent successfully.');
+            contactForm.reset();
+          }
+        } catch (err) {
+          alert(`Error: ${err.response?.data?.message || 'Something went wrong. Please try again.'}`);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send Message 🚀';
+        }
+      });
+    });

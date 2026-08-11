@@ -192,3 +192,8 @@ exports.getDownloadApps = (req, res) => {
     title: 'Download Mobile Apps',
   });
 };
+exports.getContactForm = (req, res) => {
+  res.status(200).render('contact', {
+    title: 'Contact Us',
+  });
+};
