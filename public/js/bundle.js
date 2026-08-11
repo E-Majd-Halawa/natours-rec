@@ -290,6 +290,50 @@ const $dbc9067b79f803d7$export$189a68d831f3e4ec = async (reviewId)=>{
 };
 
 
+
+const $8f1c4bddb11a4df1$export$465cb47180de50f0 = async (name, email, subject, message)=>{
+    const sendBtn = document.querySelector('.btn--send-message');
+    const originalText = sendBtn ? sendBtn.textContent : "Send Message \uD83D\uDE80";
+    try {
+        if (sendBtn) {
+            sendBtn.disabled = true;
+            sendBtn.textContent = "Sending... \u23F3";
+        }
+        const res = await (0, ($parcel$interopDefault($jANz3$axios)))({
+            method: 'POST',
+            url: '/api/v1/contact',
+            data: {
+                name: name,
+                email: email,
+                subject: subject,
+                message: message
+            }
+        });
+        if (res.data.status === 'success') {
+            alert('Thank you! Your message has been sent successfully.');
+            document.getElementById('contact-form').reset();
+        }
+    } catch (err) {
+        alert(err.response?.data?.message || 'Something went wrong! Please try again.');
+    } finally{
+        if (sendBtn) {
+            sendBtn.disabled = false;
+            sendBtn.textContent = originalText;
+        }
+    }
+};
+// Event Listener للفورم
+const $8f1c4bddb11a4df1$var$contactForm = document.getElementById('contact-form');
+if ($8f1c4bddb11a4df1$var$contactForm) $8f1c4bddb11a4df1$var$contactForm.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+    $8f1c4bddb11a4df1$export$465cb47180de50f0(name, email, subject, message);
+});
+
+
 // تشغيل الدالة
 (0, $055f4e6a5a02f42f$export$dccf1e4d1cb5d95e)();
 // 1. تحديد الجدول
@@ -475,6 +519,17 @@ if ($e18016dbdc1c1791$var$approveBtn.length > 0) $e18016dbdc1c1791$var$approveBt
             alert(err.response && err.response.data.message ? err.response.data.message : "\u062D\u062F\u062B \u062E\u0637\u0623 \u0623\u062B\u0646\u0627\u0621 \u0627\u0644\u062A\u0631\u0642\u064A\u0629!");
         }
     });
+});
+// ... الكود الموجود سابقاً في الملف ...
+const $e18016dbdc1c1791$var$contactForm = document.getElementById('contact-form');
+// 2. ربط الـ Event Listener الخاص بـ Contact Form
+if ($e18016dbdc1c1791$var$contactForm) $e18016dbdc1c1791$var$contactForm.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+    (0, $8f1c4bddb11a4df1$export$465cb47180de50f0)(name, email, subject, message);
 });
 
 

@@ -267,3 +267,23 @@ if (approveBtn.length > 0) {
     });
   });
 }
+// 1. استيراد الدالة من ملف contact.js
+import { sendMessage } from './contact';
+
+// ... الكود الموجود سابقاً في الملف ...
+const contactForm = document.getElementById('contact-form');
+
+// 2. ربط الـ Event Listener الخاص بـ Contact Form
+
+if (contactForm) {
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+
+    sendMessage(name, email, subject, message);
+  });
+}
