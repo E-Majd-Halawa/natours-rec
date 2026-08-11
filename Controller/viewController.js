@@ -2,6 +2,7 @@ const Tour = require('../Models/tourModel');
 const Review = require('../Models/reviewModel');
 const User = require('../Models/userModel');
 const Booking = require('../Models/bookingModel');
+const Contact = require('../Models/contactModel');
 
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
@@ -173,7 +174,6 @@ exports.getBecomeGuideForm = (req, res) => {
 };
 
 exports.getManageApplications = catchAsync(async (req, res, next) => {
-  // جلب كل من لديه رابط CV مفعل ورسمي + جميع المرشدين
   const applications = await User.find({
     $or: [
       { cvUrl: { $exists: true, $ne: null, $ne: '' } },
@@ -187,17 +187,36 @@ exports.getManageApplications = catchAsync(async (req, res, next) => {
     applications,
   });
 });
+
 exports.getDownloadApps = (req, res) => {
   res.status(200).render('downloadApps', {
     title: 'Download Mobile Apps',
   });
 };
+
 exports.getContactForm = (req, res) => {
   res.status(200).render('contact', {
     title: 'Contact Us',
   });
 };
-const Contact = require('../Models/contactModel'); // استدعي موديل الـ Contact عندك
+
+exports.sendContactMessage = catchAsync(async (req, res, next) => {
+  const { name, email, subject, message } = req.body;
+
+  const newContact = await Contact.create({
+    name,
+    email,
+    subject,
+    message,
+  });
+
+  res.status(201).json({
+    status: 'success',
+    data: {
+      contact: newContact,
+    },
+  });
+});
 
 exports.getManageContacts = catchAsync(async (req, res, next) => {
   const contacts = await Contact.find().sort('-createdAt');

@@ -301,7 +301,7 @@ const $8f1c4bddb11a4df1$export$465cb47180de50f0 = async (name, email, subject, m
         }
         const res = await (0, ($parcel$interopDefault($jANz3$axios)))({
             method: 'POST',
-            url: '/api/v1/contact',
+            url: '/contact',
             data: {
                 name: name,
                 email: email,

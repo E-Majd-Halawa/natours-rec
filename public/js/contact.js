@@ -12,7 +12,7 @@ export const sendMessage = async (name, email, subject, message) => {
 
     const res = await axios({
       method: 'POST',
-      url: '/api/v1/contact',
+      url: '/contact',
       data: {
         name,
         email,
