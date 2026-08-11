@@ -197,7 +197,7 @@ exports.getContactForm = (req, res) => {
     title: 'Contact Us',
   });
 };
-const Contact = require('../models/contactModel'); // استدعي موديل الـ Contact عندك
+const Contact = require('../Models/contactModel'); // استدعي موديل الـ Contact عندك
 
 exports.getManageContacts = catchAsync(async (req, res, next) => {
   const contacts = await Contact.find().sort('-createdAt');
