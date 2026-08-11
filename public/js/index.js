@@ -7,9 +7,13 @@ import { signup } from './signup';
 import { showAlert } from './alerts';
 import { deleteUser } from './manageUsers';
 import { initBecomeGuide } from './becomeGuide';
+import { deleteReview } from './deleteReview';
+import { sendMessage } from './contact';
+import axios from 'axios';
 
 // تشغيل الدالة
 initBecomeGuide();
+
 // 1. تحديد الجدول
 const usersTable = document.querySelector('.table-users');
 
@@ -30,13 +34,15 @@ if (usersTable) {
     }
   });
 }
-//DOM
+
+// DOM
 const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form--login');
 const logOutBtn = document.querySelector('.nav__el--logout');
 const userPasswordForm = document.querySelector('.form-user-password');
 const bookBtn = document.getElementById('book-tour');
-//delegation
+
+// delegation
 if (mapBox) {
   displayMap(mapBox);
 }
@@ -44,12 +50,13 @@ if (mapBox) {
 if (loginForm) {
   loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    //values
+    // values
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     login(email, password);
   });
 }
+
 if (logOutBtn)
   logOutBtn.addEventListener('click', (event) => {
     event.preventDefault();
@@ -84,6 +91,7 @@ if (userDataForm) {
     updateSettings(form, 'data');
   });
 }
+
 if (userPasswordForm) {
   userPasswordForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -102,6 +110,7 @@ if (userPasswordForm) {
     document.getElementById('password-confirm').value = '';
   });
 }
+
 if (bookBtn) {
   bookBtn.addEventListener('click', (el) => {
     el.target.textContent = 'Processing...';
@@ -109,6 +118,7 @@ if (bookBtn) {
     bookTour(tourId);
   });
 }
+
 const signupForm = document.querySelector('.form--signup');
 
 if (signupForm) {
@@ -121,10 +131,9 @@ if (signupForm) {
     signup(name, email, password, passwordConfirm);
   });
 }
+
 const alertMessage = document.querySelector('body').dataset.alert;
 if (alertMessage) showAlert('success', alertMessage, 20);
-import axios from 'axios';
-import { showAlert } from './alerts'; // إذا كنت تستخدم مكتبة التنبيهات الخاصة بك
 
 const tableReviews = document.querySelector('.table-reviews');
 
@@ -158,6 +167,7 @@ if (tableReviews) {
     }
   });
 }
+
 const tableBookings = document.querySelector('.table-bookings');
 
 if (tableBookings) {
@@ -186,6 +196,7 @@ if (tableBookings) {
     }
   });
 }
+
 const userReviewsTable = document.querySelector('.table-reviews');
 
 if (userReviewsTable) {
@@ -214,7 +225,6 @@ if (userReviewsTable) {
     }
   });
 }
-import { deleteReview } from './deleteReview';
 
 // البحث عن كل أزرار الحذف في الصفحة
 const deleteBtns = document.querySelectorAll('.btn-delete-review');
@@ -232,6 +242,7 @@ if (deleteBtns.length > 0) {
     });
   });
 }
+
 // البحث عن زر قبول المرشد وتفعيل الحدث
 const approveBtn = document.querySelectorAll('.btn--approve-guide');
 
@@ -267,13 +278,9 @@ if (approveBtn.length > 0) {
     });
   });
 }
-// 1. استيراد الدالة من ملف contact.js
-import { sendMessage } from './contact';
-
-// ... الكود الموجود سابقاً في الملف ...
-const contactForm = document.getElementById('contact-form');
 
 // 2. ربط الـ Event Listener الخاص بـ Contact Form
+const contactForm = document.getElementById('contact-form');
 
 if (contactForm) {
   contactForm.addEventListener('submit', (e) => {
@@ -285,5 +292,28 @@ if (contactForm) {
     const message = document.getElementById('message').value;
 
     sendMessage(name, email, subject, message);
+  });
+}
+// أضف الاستيراد في أعلى ملف index.js
+import { deleteContact } from './manageContacts';
+
+// ... باقي الأكواد الموجودة لديك في index.js ...
+
+// Event Delegation لحذف الرسائل من جدول إدارة الرسائل
+const tableContacts = document.querySelector('.table--contacts');
+
+if (tableContacts) {
+  tableContacts.addEventListener('click', (e) => {
+    const deleteBtn = e.target.closest('.btn--delete-contact');
+
+    if (deleteBtn) {
+      e.preventDefault();
+      const contactId = deleteBtn.dataset.contactId;
+      const rowElement = deleteBtn.closest('tr');
+
+      if (confirm('Are you sure you want to delete this message?')) {
+        deleteContact(contactId, rowElement);
+      }
+    }
   });
 }

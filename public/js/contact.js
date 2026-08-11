@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { showAlert } from './alerts';
 
 export const sendMessage = async (name, email, subject, message) => {
   const sendBtn = document.querySelector('.btn--send-message');
@@ -22,11 +23,15 @@ export const sendMessage = async (name, email, subject, message) => {
     });
 
     if (res.data.status === 'success') {
-      alert('Thank you! Your message has been sent successfully.');
+      showAlert(
+        'success',
+        'Thank you! Your message has been sent successfully.',
+      );
       document.getElementById('contact-form').reset();
     }
   } catch (err) {
-    alert(
+    showAlert(
+      'error',
       err.response?.data?.message || 'Something went wrong! Please try again.',
     );
   } finally {
@@ -36,17 +41,3 @@ export const sendMessage = async (name, email, subject, message) => {
     }
   }
 };
-
-// Event Listener للفورم
-const contactForm = document.getElementById('contact-form');
-if (contactForm) {
-  contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const subject = document.getElementById('subject').value;
-    const message = document.getElementById('message').value;
-
-    sendMessage(name, email, subject, message);
-  });
-}

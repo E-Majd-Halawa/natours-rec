@@ -26,6 +26,7 @@ block content
               +navItem('/manage-reviews', 'Manage reviews', 'star', false)
               +navItem('/manage-bookings', 'Manage bookings', 'briefcase', false)
               +navItem('/manage-applications', 'Manage Applications', 'file-text', true)
+              +navItem('/manage-contacts', 'Contact Messages', 'mail', false)
 
       .user-view__content
         .user-view__form-container
@@ -96,7 +97,7 @@ block content
             data: { role: targetRole }
           });
 
-          if (res.data.status === 'success') {
+          if (res.data?.status === 'success') {
             window.location.reload();
           }
         } catch (err) {
@@ -107,7 +108,7 @@ block content
         return;
       }
 
-      // 2) رفض وحذف الطلب عبر ה-Endpoint المخصص
+      // 2) رفض وحذف الطلب
       const deleteBtn = e.target.closest('.btn--delete-app');
       if (deleteBtn) {
         e.preventDefault();
@@ -124,8 +125,13 @@ block content
             url: `/api/v1/users/delete-application/${userId}`
           });
 
-          if (res.data.status === 'success') {
-            window.location.reload();
+          if (res.status === 204 || res.data?.status === 'success') {
+            const row = deleteBtn.closest('tr');
+            if (row) {
+              row.remove();
+            } else {
+              window.location.reload();
+            }
           }
         } catch (err) {
           deleteBtn.disabled = false;

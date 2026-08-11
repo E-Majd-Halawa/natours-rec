@@ -12,18 +12,21 @@ block content
     .user-view
       nav.user-view__menu
         ul.side-nav
-          +navItem('/me', 'Settings', 'settings')
-          +navItem('/my-tours', 'My bookings', 'briefcase')
-          +navItem('#', 'My reviews', 'star')
-          +navItem('#', 'Billing', 'credit-card')
-        if user.role === 'admin'
+          +navItem('/me', 'Settings', 'settings', false)
+          +navItem('/my-tours', 'My bookings', 'briefcase', false)
+          +navItem('/my-reviews', 'My reviews', 'star', false)
+          +navItem('/billing', 'Billing', 'credit-card', false)
+
+        - if (user && user.role === 'admin')
           .admin-nav
             h5.admin-nav__heading Admin
             ul.side-nav
-              +navItem('/manage-tours', 'Manage tours', 'map')
-              +navItem('/manage-users', 'Manage users', 'users')
-              +navItem('/manage-reviews', 'Manage reviews', 'star')
+              +navItem('/manage-tours', 'Manage tours', 'map', false)
+              +navItem('/manage-users', 'Manage users', 'users', false)
+              +navItem('/manage-reviews', 'Manage reviews', 'star', false)
               +navItem('/manage-bookings', 'Manage bookings', 'briefcase', true)
+              +navItem('/manage-applications', 'Manage Applications', 'file-text', false)
+              +navItem('/manage-contacts', 'Contact Messages', 'mail', false)
 
       .user-view__content
         .user-view__form-container
@@ -43,7 +46,8 @@ block content
                   th Action
               tbody
                 each booking in bookings
-                  tr(data-booking-id=booking.id)
+                  - const bookingId = booking._id || booking.id
+                  tr(data-booking-id=bookingId)
                     td= booking.tour ? booking.tour.name : 'Deleted Tour'
                     td= booking.user ? booking.user.name : 'Deleted User'
                     td $#{booking.price}
@@ -51,4 +55,40 @@ block content
                       span= booking.paid !== false ? '✅ Paid' : '❌ Unpaid'
                     td= new Date(booking.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                     td
-                      button.btn.btn--small.btn--danger.btn--delete-booking(data-booking-id=booking.id) Delete
+                      button.btn.btn--small.btn--danger.btn--delete-booking(data-booking-id=bookingId) Delete
+
+block append scripts
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js')
+  script.
+    document.addEventListener('click', async (e) => {
+      const deleteBtn = e.target.closest('.btn--delete-booking');
+      if (deleteBtn) {
+        e.preventDefault();
+        const bookingId = deleteBtn.dataset.bookingId;
+
+        if (!confirm('Are you sure you want to delete this booking?')) return;
+
+        try {
+          deleteBtn.disabled = true;
+          deleteBtn.textContent = 'Deleting...';
+
+          const res = await axios({
+            method: 'DELETE',
+            url: `/api/v1/bookings/${bookingId}`
+          });
+
+          if (res.status === 204 || res.data?.status === 'success') {
+            const row = deleteBtn.closest('tr');
+            if (row) {
+              row.remove();
+            } else {
+              window.location.reload();
+            }
+          }
+        } catch (err) {
+          deleteBtn.disabled = false;
+          deleteBtn.textContent = 'Delete';
+          alert(`Error: ${err.response?.data?.message || err.message}`);
+        }
+      }
+    });

@@ -31,11 +31,11 @@ block content
           h2.heading-secondary.ma-bt-md Send a Message
           form.form.form-contact#contact-form
             .form__group--float
-              input#name.form__input(type='text', placeholder=' ', required, name='name', value=`${user ? user.name : ''}`)
+              input#name.form__input(type='text', required, name='name', value=`${user.name}`, readonly)
               label.form__label(for='name') Your Name
             
             .form__group--float
-              input#email.form__input(type='email', placeholder=' ', required, name='email', value=`${user ? user.email : ''}`)
+              input#email.form__input(type='email', required, name='email', value=`${user.email}`, readonly)
               label.form__label(for='email') Email Address
             
             .form__group--float
@@ -48,41 +48,3 @@ block content
 
             .form__group.right
               button.btn.btn--green.btn--send-message(type='submit') Send Message 🚀
-
-  script(src='https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js')
-  script.
-    document.addEventListener('DOMContentLoaded', () => {
-      const contactForm = document.getElementById('contact-form');
-      if (!contactForm) return;
-
-      contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const subject = document.getElementById('subject').value;
-        const message = document.getElementById('message').value;
-        const submitBtn = contactForm.querySelector('.btn--send-message');
-
-        try {
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'Sending...';
-
-          const res = await axios({
-            method: 'POST',
-            url: '/api/v1/contact',
-            data: { name, email, subject, message }
-          });
-
-          if (res.data.status === 'success') {
-            alert('Thank you! Your message has been sent successfully.');
-            contactForm.reset();
-          }
-        } catch (err) {
-          alert(`Error: ${err.response?.data?.message || 'Something went wrong. Please try again.'}`);
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Send Message 🚀';
-        }
-      });
-    });

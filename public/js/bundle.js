@@ -264,7 +264,6 @@ const $055f4e6a5a02f42f$export$dccf1e4d1cb5d95e = ()=>{
 };
 
 
-
 // deleteReview.js
 
 
@@ -291,6 +290,7 @@ const $dbc9067b79f803d7$export$189a68d831f3e4ec = async (reviewId)=>{
 
 
 
+
 const $8f1c4bddb11a4df1$export$465cb47180de50f0 = async (name, email, subject, message)=>{
     const sendBtn = document.querySelector('.btn--send-message');
     const originalText = sendBtn ? sendBtn.textContent : "Send Message \uD83D\uDE80";
@@ -310,11 +310,11 @@ const $8f1c4bddb11a4df1$export$465cb47180de50f0 = async (name, email, subject, m
             }
         });
         if (res.data.status === 'success') {
-            alert('Thank you! Your message has been sent successfully.');
+            (0, $9872a30d54cb2189$export$de026b00723010c1)('success', 'Thank you! Your message has been sent successfully.');
             document.getElementById('contact-form').reset();
         }
     } catch (err) {
-        alert(err.response?.data?.message || 'Something went wrong! Please try again.');
+        (0, $9872a30d54cb2189$export$de026b00723010c1)('error', err.response?.data?.message || 'Something went wrong! Please try again.');
     } finally{
         if (sendBtn) {
             sendBtn.disabled = false;
@@ -322,16 +322,29 @@ const $8f1c4bddb11a4df1$export$465cb47180de50f0 = async (name, email, subject, m
         }
     }
 };
-// Event Listener للفورم
-const $8f1c4bddb11a4df1$var$contactForm = document.getElementById('contact-form');
-if ($8f1c4bddb11a4df1$var$contactForm) $8f1c4bddb11a4df1$var$contactForm.addEventListener('submit', (e)=>{
-    e.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const subject = document.getElementById('subject').value;
-    const message = document.getElementById('message').value;
-    $8f1c4bddb11a4df1$export$465cb47180de50f0(name, email, subject, message);
-});
+
+
+
+
+
+const $1684bd6b16af04e4$export$768b73f800a944a3 = async (contactId, rowElement)=>{
+    try {
+        const res = await (0, ($parcel$interopDefault($jANz3$axios)))({
+            method: 'DELETE',
+            url: `/manage-contacts/${contactId}`
+        });
+        if (res.status === 204 || res.data?.status === 'success') {
+            (0, $9872a30d54cb2189$export$de026b00723010c1)('success', 'Contact message deleted successfully!');
+            if (rowElement) rowElement.remove();
+            else window.location.reload();
+        }
+    } catch (err) {
+        // إظهار سبب الخطأ القادم من الباك إند
+        const errorMsg = err.response?.data?.message || err.message || 'Error deleting contact message!';
+        (0, $9872a30d54cb2189$export$de026b00723010c1)('error', errorMsg);
+        console.error('Delete Contact Error:', err.response?.data);
+    }
+};
 
 
 // تشغيل الدالة
@@ -349,17 +362,17 @@ if ($e18016dbdc1c1791$var$usersTable) $e18016dbdc1c1791$var$usersTable.addEventL
         if (confirm('Are you sure you want to delete this user?')) (0, $f25c14890e575cd8$export$7d0f10f273c0438a)(userId, userRow);
     }
 });
-//DOM
+// DOM
 const $e18016dbdc1c1791$var$mapBox = document.getElementById('map');
 const $e18016dbdc1c1791$var$loginForm = document.querySelector('.form--login');
 const $e18016dbdc1c1791$var$logOutBtn = document.querySelector('.nav__el--logout');
 const $e18016dbdc1c1791$var$userPasswordForm = document.querySelector('.form-user-password');
 const $e18016dbdc1c1791$var$bookBtn = document.getElementById('book-tour');
-//delegation
+// delegation
 if ($e18016dbdc1c1791$var$mapBox) (0, $567099f3ebcb8bdf$export$4c5dd147b21b9176)($e18016dbdc1c1791$var$mapBox);
 if ($e18016dbdc1c1791$var$loginForm) $e18016dbdc1c1791$var$loginForm.addEventListener('submit', (e)=>{
     e.preventDefault();
-    //values
+    // values
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     (0, $8f9e48ecb391b951$export$596d806903d1f59e)(email, password);
@@ -520,9 +533,8 @@ if ($e18016dbdc1c1791$var$approveBtn.length > 0) $e18016dbdc1c1791$var$approveBt
         }
     });
 });
-// ... الكود الموجود سابقاً في الملف ...
-const $e18016dbdc1c1791$var$contactForm = document.getElementById('contact-form');
 // 2. ربط الـ Event Listener الخاص بـ Contact Form
+const $e18016dbdc1c1791$var$contactForm = document.getElementById('contact-form');
 if ($e18016dbdc1c1791$var$contactForm) $e18016dbdc1c1791$var$contactForm.addEventListener('submit', (e)=>{
     e.preventDefault();
     const name = document.getElementById('name').value;
@@ -530,6 +542,18 @@ if ($e18016dbdc1c1791$var$contactForm) $e18016dbdc1c1791$var$contactForm.addEven
     const subject = document.getElementById('subject').value;
     const message = document.getElementById('message').value;
     (0, $8f1c4bddb11a4df1$export$465cb47180de50f0)(name, email, subject, message);
+});
+// ... باقي الأكواد الموجودة لديك في index.js ...
+// Event Delegation لحذف الرسائل من جدول إدارة الرسائل
+const $e18016dbdc1c1791$var$tableContacts = document.querySelector('.table--contacts');
+if ($e18016dbdc1c1791$var$tableContacts) $e18016dbdc1c1791$var$tableContacts.addEventListener('click', (e)=>{
+    const deleteBtn = e.target.closest('.btn--delete-contact');
+    if (deleteBtn) {
+        e.preventDefault();
+        const contactId = deleteBtn.dataset.contactId;
+        const rowElement = deleteBtn.closest('tr');
+        if (confirm('Are you sure you want to delete this message?')) (0, $1684bd6b16af04e4$export$768b73f800a944a3)(contactId, rowElement);
+    }
 });
 
 

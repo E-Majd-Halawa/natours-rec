@@ -1,51 +1,83 @@
 extends base
 
-block content
-    main.main
-        .admin-view
-            .admin-view__header
-                h2.heading-secondary Manage tours
-                a.btn.btn--small.btn--green(href='/manage-tours/new') + New tour
-            .admin-table-wrap
-                table.admin-table
-                    thead
-                        tr
-                            th
-                            th Name
-                            th Difficulty
-                            th Duration
-                            th Price
-                            th Rating
-                            th
-                    tbody
-                        each tour in tours
-                            tr(data-id=`${tour.id}`)
-                                td
-                                    - const isCloudinary = tour.imageCover && tour.imageCover.startsWith('http');
-                                    - const imgSrc = isCloudinary ? tour.imageCover : `/img/tours/${tour.imageCover || 'default.jpg'}`;
-                                    img.admin-table__thumb(
-                                        src=imgSrc, 
-                                        alt=tour.name,
-                                        onerror="this.src='/img/tours/default.jpg'"
-                                    )
-                                td
-                                    span.admin-table__name= tour.name
-                                    span.admin-table__sub= tour.startLocation && tour.startLocation.description ? tour.startLocation.description : ''
-                                td
-                                    span.badge(class=`diff-${tour.difficulty}`)= tour.difficulty
-                                td= `${tour.duration}d`
-                                td.mono= `$${tour.price}`
-                                td.mono= `${tour.ratingsAverage || 0} (${tour.ratingsQuantity || 0})`
-                                td.admin-table__actions
-                                    a.admin-icon-btn(href=`/tour/${tour.slug}`, title='View on site', target='_blank')
-                                        svg
-                                            use(xlink:href='/img/icons.svg#icon-map-pin')
-                                    a.admin-icon-btn(href=`/manage-tours/${tour.id}`, title='Edit')
-                                        svg
-                                            use(xlink:href='/img/icons.svg#icon-settings')
-                                    button.admin-icon-btn.admin-icon-btn--danger(type='button', title='Delete', data-delete-id=`${tour.id}`, data-delete-name=`${tour.name}`)
-                                        svg(viewBox='0 0 24 24' fill='none')
-                                            path(stroke='currentColor' stroke-width='2' d='M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m2 0-1 13a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2L7 7')
+mixin navItem(link, text, icon, active)
+  li(class=`${active ? 'side-nav--active' : ''}`)
+    a(href=`${link}`)
+      svg
+        use(xlink:href=`/img/icons.svg#icon-${icon}`)
+      | #{text}
 
 block append scripts
-    script(src='/js/manageTours.js')
+  script(src='/js/manageTours.js')
+
+block content
+  main.main
+    .user-view
+      nav.user-view__menu
+        ul.side-nav
+          +navItem('/me', 'Settings', 'settings', false)
+          +navItem('/my-tours', 'My bookings', 'briefcase', false)
+          +navItem('/my-reviews', 'My reviews', 'star', false)
+          +navItem('/billing', 'Billing', 'credit-card', false)
+
+        - if (user && user.role === 'admin')
+          .admin-nav
+            h5.admin-nav__heading Admin
+            ul.side-nav
+              +navItem('/manage-tours', 'Manage tours', 'map', true)
+              +navItem('/manage-users', 'Manage users', 'users', false)
+              +navItem('/manage-reviews', 'Manage reviews', 'star', false)
+              +navItem('/manage-bookings', 'Manage bookings', 'briefcase', false)
+              +navItem('/manage-applications', 'Manage Applications', 'file-text', false)
+              +navItem('/manage-contacts', 'Contact Messages', 'mail', false)
+
+      .user-view__content
+        .admin-view
+          .admin-view__header
+            h2.heading-secondary Manage tours
+            a.btn.btn--small.btn--green(href='/manage-tours/new') + New tour
+
+          .admin-table-wrap
+            if !tours || tours.length === 0
+              p.no-data(style="padding: 3rem; text-align: center; font-size: 1.6rem; color: #777;") No tours found in the system.
+            else
+              table.admin-table
+                thead
+                  tr
+                    th
+                    th Name
+                    th Difficulty
+                    th Duration
+                    th Price
+                    th Rating
+                    th Actions
+                tbody
+                  each tour in tours
+                    - const tourId = tour._id || tour.id
+                    tr(data-id=`${tourId}`)
+                      td
+                        - const isCloudinary = tour.imageCover && tour.imageCover.startsWith('http');
+                        - const imgSrc = isCloudinary ? tour.imageCover : `/img/tours/${tour.imageCover || 'default.jpg'}`;
+                        img.admin-table__thumb(
+                          src=imgSrc, 
+                          alt=tour.name,
+                          onerror="this.src='/img/tours/default.jpg'"
+                        )
+                      td
+                        span.admin-table__name= tour.name
+                        span.admin-table__sub= tour.startLocation && tour.startLocation.description ? tour.startLocation.description : ''
+                      td
+                        span.badge(class=`diff-${tour.difficulty}`)= tour.difficulty
+                      td= `${tour.duration}d`
+                      td.mono= `$${tour.price}`
+                      td.mono= `${tour.ratingsAverage || 0} (${tour.ratingsQuantity || 0})`
+                      td.admin-table__actions
+                        a.admin-icon-btn(href=`/tour/${tour.slug}`, title='View on site', target='_blank')
+                          svg
+                            use(xlink:href='/img/icons.svg#icon-map-pin')
+                        a.admin-icon-btn(href=`/manage-tours/${tourId}`, title='Edit')
+                          svg
+                            use(xlink:href='/img/icons.svg#icon-settings')
+                        button.admin-icon-btn.admin-icon-btn--danger(type='button', title='Delete', data-delete-id=`${tourId}`, data-delete-name=`${tour.name}`)
+                          svg(viewBox='0 0 24 24' fill='none')
+                            path(stroke='currentColor' stroke-width='2' d='M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m2 0-1 13a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2L7 7')

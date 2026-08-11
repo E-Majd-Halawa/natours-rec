@@ -90,12 +90,25 @@ router.get(
   viewController.getManageApplications,
 );
 // أضف السطر التالي مع باقي الـ Routes التي تعرض صفحات Pug
-router.get('/contact', viewController.getContactForm);
+// عرض الصفحة
+router
+  .route('/contact')
+  .get(authController.protect, viewController.getContactForm)
+  .post(authController.protect, viewController.sendContactMessage);
 router.get('/download-apps', viewController.getDownloadApps);
 router.get(
   '/manage-contacts',
   authController.protect,
   authController.restrictTo('admin'),
   viewController.getManageContacts,
+);
+// routes/viewRoutes.js
+
+// مسار حذف الرسالة
+router.delete(
+  '/manage-contacts/:id',
+  authController.protect,
+  authController.restrictTo('admin'),
+  viewController.deleteContact,
 );
 module.exports = router;

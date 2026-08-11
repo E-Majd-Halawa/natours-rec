@@ -56,11 +56,17 @@ exports.upDateUserData = catchAsync(async (req, res, next) => {
 });
 
 exports.getMyTours = catchAsync(async (req, res, next) => {
+  // 1) Find all bookings
   const bookings = await Booking.find({ user: req.user.id });
+
+  // 2) Find tours with the returned IDs
   const tourIDs = bookings.map((el) => el.tour);
   const tours = await Tour.find({ _id: { $in: tourIDs } });
+
+  // 3) Render template with isMyTours flag
   res.status(200).render('overview', {
-    title: 'My Tours',
+    title: 'My Bookings',
+    isMyTours: true,
     tours,
   });
 });
@@ -200,6 +206,7 @@ exports.getContactForm = (req, res) => {
   });
 };
 
+// أضف هذه الدالة أو حدثها في viewsController.js
 exports.sendContactMessage = catchAsync(async (req, res, next) => {
   const { name, email, subject, message } = req.body;
 
@@ -208,6 +215,7 @@ exports.sendContactMessage = catchAsync(async (req, res, next) => {
     email,
     subject,
     message,
+    user: req.user.id, // إضافة معرّف المستخدم المسجل للرسالة
   });
 
   res.status(201).json({
@@ -224,5 +232,18 @@ exports.getManageContacts = catchAsync(async (req, res, next) => {
   res.status(200).render('manageContacts', {
     title: 'Manage Contact Messages',
     contacts,
+  });
+});
+exports.deleteContact = catchAsync(async (req, res, next) => {
+  const contact = await Contact.findByIdAndDelete(req.params.id);
+
+  if (!contact) {
+    return next(new AppError('No contact message found with that ID', 404));
+  }
+
+  // 204 No Content
+  res.status(204).json({
+    status: 'success',
+    data: null,
   });
 });
