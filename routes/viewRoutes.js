@@ -92,4 +92,10 @@ router.get(
 // أضف السطر التالي مع باقي الـ Routes التي تعرض صفحات Pug
 router.get('/contact', viewController.getContactForm);
 router.get('/download-apps', viewController.getDownloadApps);
+router.get(
+  '/manage-contacts',
+  authController.protect,
+  authController.restrictTo('admin'),
+  viewController.getManageContacts,
+);
 module.exports = router;

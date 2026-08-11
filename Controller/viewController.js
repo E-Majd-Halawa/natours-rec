@@ -197,3 +197,13 @@ exports.getContactForm = (req, res) => {
     title: 'Contact Us',
   });
 };
+const Contact = require('../models/contactModel'); // استدعي موديل الـ Contact عندك
+
+exports.getManageContacts = catchAsync(async (req, res, next) => {
+  const contacts = await Contact.find().sort('-createdAt');
+
+  res.status(200).render('manageContacts', {
+    title: 'Manage Contact Messages',
+    contacts,
+  });
+});

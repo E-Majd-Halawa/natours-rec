@@ -1,70 +1,70 @@
 extends base
 
 mixin navItem(link, text, icon, active)
-    li(class=`${active ? 'side-nav--active' : ''}`)
-        a(href=`${link}`)
-            svg
-                use(xlink:href=`/img/icons.svg#icon-${icon}`)
-            | #{text}
+  li(class=`${active ? 'side-nav--active' : ''}`)
+    a(href=`${link}`)
+      svg
+        use(xlink:href=`/img/icons.svg#icon-${icon}`)
+      | #{text}
 
 block content
-    main.main
-        .user-view
-            nav.user-view__menu
-                ul.side-nav
-                    +navItem('#', 'Settings', 'settings', true)
-                    +navItem('/my-tours', 'My bookings', 'briefcase')
-                    +navItem('my-reviews', 'My reviews', 'star')
-                    +navItem('/billing', 'Billing', 'credit-card')
-                
-                if user.role === 'admin'
-                    .admin-nav
-                        h5.admin-nav__heading Admin
-                        ul.side-nav
-                            +navItem('/manage-tours', 'Manage tours', 'map')
-                            +navItem('/manage-users', 'Manage users', 'users')
-                            +navItem('/manage-reviews', 'Manage reviews', 'star')
-                            +navItem('/manage-bookings', 'Manage bookings', 'briefcase')
-                            // العنصر الجديد الخاص بإدارة طلبات المرشدين
-                            +navItem('/manage-applications', 'Guide Applications', 'file-text')
+  main.main
+    .user-view
+      nav.user-view__menu
+        ul.side-nav
+          +navItem('/me', 'Settings', 'settings', true)
+          +navItem('/my-tours', 'My bookings', 'briefcase')
+          +navItem('/my-reviews', 'My reviews', 'star')
+          +navItem('/billing', 'Billing', 'credit-card')
 
-            .user-view__content
-                .user-view__form-container
-                    h2.heading-secondary.ma-bt-md Your account settings
-                    form.form.form-user-data
-                        .form__group--float
-                            input#name.form__input(type='text', value=`${user.name}`, placeholder=' ', required, name='name')
-                            label.form__label(for='name') Name
-                        .form__group--float
-                            input#email.form__input(type='email', value=`${user.email}`, placeholder=' ', required, name='email')
-                            label.form__label(for='email') Email address
+        if user.role === 'admin'
+          .admin-nav
+            h5.admin-nav__heading Admin
+            ul.side-nav
+              +navItem('/manage-tours', 'Manage tours', 'map')
+              +navItem('/manage-users', 'Manage users', 'users')
+              +navItem('/manage-reviews', 'Manage reviews', 'star')
+              +navItem('/manage-bookings', 'Manage bookings', 'briefcase')
+              +navItem('/manage-applications', 'Manage Applications', 'file-text')
+              +navItem('/manage-contacts', 'Contact Messages', 'mail')
 
-                        .form__group.form__photo-upload
-                            - const photoSrc = user.photo && user.photo.startsWith('data:') ? user.photo : `/img/users/${user.photo || 'default.jpg'}`
-                            img.form__user-photo(src=photoSrc, alt='User photo')
-                            .form__photo-actions
-                                label.form__upload-label(for='photo') Choose new photo
-                                input.form__upload(type='file', accept='image/*', id='photo', name='photo')
-                                br
-                                span.form__hint JPG or PNG, up to 2MB.
+      .user-view__content
+        .user-view__form-container
+          h2.heading-secondary.ma-bt-md Your account settings
+          form.form.form-user-data
+            .form__group--float
+              input#name.form__input(type='text', value=`${user.name}`, placeholder=' ', required, name='name')
+              label.form__label(for='name') Name
+            .form__group--float
+              input#email.form__input(type='email', value=`${user.email}`, placeholder=' ', required, name='email')
+              label.form__label(for='email') Email address
 
-                        .form__group.right
-                            button.btn.btn--small.btn--green(type='submit') Save settings
+            .form__group.form__photo-upload
+              - const photoSrc = user.photo && user.photo.startsWith('data:') ? user.photo : `/img/users/${user.photo || 'default.jpg'}`
+              img.form__user-photo(src=photoSrc, alt='User photo')
+              .form__photo-actions
+                label.form__upload-label(for='photo') Choose new photo
+                input.form__upload(type='file', accept='image/*', id='photo', name='photo')
+                br
+                span.form__hint JPG or PNG, up to 2MB.
 
-                .line &nbsp;
+            .form__group.right
+              button.btn.btn--small.btn--green(type='submit') Save settings
 
-                .user-view__form-container
-                    h2.heading-secondary.ma-bt-md Password change
-                    form.form.form-user-password
-                        .form__group--float
-                            input#password-current.form__input(type='password', placeholder=' ', required, minlength='8')
-                            label.form__label(for='password-current') Current password
-                        .form__group--float
-                            input#password.form__input(type='password', placeholder=' ', required, minlength='8')
-                            label.form__label(for='password') New password
-                        .form__group--float.ma-bt-lg
-                            input#password-confirm.form__input(type='password', placeholder=' ', required, minlength='8')
-                            label.form__label(for='password-confirm') Confirm password
+        .line &nbsp;
 
-                        .form__group.right
-                            button.btn.btn--small.btn--green.btn--save-password(type='submit') Save password
+        .user-view__form-container
+          h2.heading-secondary.ma-bt-md Password change
+          form.form.form-user-password
+            .form__group--float
+              input#password-current.form__input(type='password', placeholder=' ', required, minlength='8')
+              label.form__label(for='password-current') Current password
+            .form__group--float
+              input#password.form__input(type='password', placeholder=' ', required, minlength='8')
+              label.form__label(for='password') New password
+            .form__group--float.ma-bt-lg
+              input#password-confirm.form__input(type='password', placeholder=' ', required, minlength='8')
+              label.form__label(for='password-confirm') Confirm password
+
+            .form__group.right
+              button.btn.btn--small.btn--green.btn--save-password(type='submit') Save password
