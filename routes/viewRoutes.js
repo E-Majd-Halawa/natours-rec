@@ -90,6 +90,6 @@ router.get(
   viewController.getManageApplications,
 );
 // أضف السطر التالي مع باقي الـ Routes التي تعرض صفحات Pug
-router.get('/contact', viewsController.getContactForm);
+router.get('/contact', viewController.getContactForm);
 router.get('/download-apps', viewController.getDownloadApps);
 module.exports = router;
