@@ -2568,3 +2568,21 @@ textarea.form__input {
   flex: 1;
   color: inherit;
 }
+.cta__booked {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  padding: 14px 28px;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.cta__booked-icon {
+  width: 18px;
+  height: 18px;
+  fill: var(--amber);
+  flex-shrink: 0;
+}

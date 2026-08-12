@@ -31,9 +31,21 @@ exports.getTour = catchAsync(async (req, res, next) => {
   if (!tour) {
     return next(new AppError('There is no tour with that name', 404));
   }
+
+  // تحقق إذا كان المستخدم الحالي عنده حجز على هاي الجولة
+  let isBooked = false;
+  if (req.user) {
+    const booking = await Booking.findOne({
+      tour: tour._id,
+      user: req.user.id,
+    });
+    isBooked = !!booking;
+  }
+
   res.status(200).render('tour', {
     title: `${tour.name}`,
     tour,
+    isBooked,
   });
 });
 
@@ -56,17 +68,18 @@ exports.upDateUserData = catchAsync(async (req, res, next) => {
 });
 
 exports.getMyTours = catchAsync(async (req, res, next) => {
-  // 1) جيب الحجوزات الخاصة بالمستخدم الحالي
+  // 1) Find all bookings
   const bookings = await Booking.find({ user: req.user.id });
 
-  // 2) جيب الـ tours المرتبطة بهاي الحجوزات
+  // 2) Find tours with the returned IDs
   const tourIDs = bookings.map((el) => el.tour);
   const tours = await Tour.find({ _id: { $in: tourIDs } });
 
-  res.status(200).render('my-tours', {
+  // 3) Render template with isMyTours flag
+  res.status(200).render('overview', {
     title: 'My Bookings',
+    isMyTours: true,
     tours,
-    user: req.user, // مهم عشان يشتغل شرط user.role === 'admin' بالقائمة
   });
 });
 

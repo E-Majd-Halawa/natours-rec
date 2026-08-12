@@ -49,56 +49,56 @@ block content
                     p.result-count#resultCount
 
                 .card-container#cardGrid
-                    each tour in tours
-                        .card(
-                            data-diff=tour.difficulty
-                            data-price=tour.price
-                            data-rating=tour.ratingsAverage
-                            data-name=`${tour.name} ${tour.startLocation ? tour.startLocation.description : ''}`.toLowerCase()
-                        )
-                            a.card__link(href=`/tour/${tour.slug}`)
-                                .card__header
-                                    .card__picture
-                                        - const isCloudinary = tour.imageCover && tour.imageCover.startsWith('http');
-                                        img.card__picture-img(
-                                          src= isCloudinary ? tour.imageCover : `/img/tours/${tour.imageCover}`, 
-                                          alt=tour.name, 
-                                          loading='lazy'
-                                        )
-                                        .card__picture-overlay &nbsp;
-                                    .badge-row
-                                        span.badge(class=`diff-${tour.difficulty}`)= tour.difficulty
-                                        span.badge= `${tour.duration} days`
-                                    h3.heading-tertirary= tour.name
-                                    .ridge
-                                        svg(viewBox='0 0 320 20' preserveAspectRatio='none')
-                                            path(fill='#FFFFFF' d='M0 20 L0 12 L16 6 L38 14 L62 3 L88 12 L112 5 L136 14 L162 7 L188 15 L214 5 L240 13 L266 4 L292 12 L320 8 L320 20 Z')
-                                .card__details
-                                    p.card__text= tour.summary
-                                    .card__data
-                                        svg.card__icon
-                                            use(xlink:href='/img/icons.svg#icon-map-pin')
-                                        span= tour.startLocation ? tour.startLocation.description : 'Location TBA'
-                                    .card__data
-                                        svg.card__icon
-                                            use(xlink:href='/img/icons.svg#icon-calendar')
-                                        span= tour.startDates && tour.startDates.length ? tour.startDates[0].toLocaleString('en-us',{month:'long',year:'numeric'}) : 'Date TBA'
-                                    .card__data
-                                        svg.card__icon
-                                            use(xlink:href='/img/icons.svg#icon-flag')
-                                        span= `${tour.locations ? tour.locations.length : 0} Stops`
-                                    .card__data
-                                        svg.card__icon
-                                            use(xlink:href='/img/icons.svg#icon-user')
-                                        span= `${tour.maxGroupSize} People`
-                                .card__footer
-                                    p
-                                        span.card__footer-value= `$${tour.price}`
-                                        span.card__footer-text per person
-                                    p.card__ratings
-                                        span.card__footer-value= tour.ratingsAverage
-                                        span.card__footer-text= `rating (${tour.ratingsQuantity})`
-                                    span.btn--small Details
+                        each tour in tours
+                            .card(
+                                data-diff=tour.difficulty
+                                data-price=tour.price
+                                data-rating=tour.ratingsAverage
+                                data-name=`${tour.name} ${tour.startLocation ? tour.startLocation.description : ''}`.toLowerCase()
+                            )
+                                a(href=`/tour/${tour.slug}` style='display:contents')
+                                    .card__header
+                                        .card__picture
+                                            - const isCloudinary = tour.imageCover && tour.imageCover.startsWith('http');
+                                            img.card__picture-img(
+                                            src= isCloudinary ? tour.imageCover : `/img/tours/${tour.imageCover}`, 
+                                            alt=tour.name, 
+                                            loading='lazy'
+                                            )
+                                            .card__picture-overlay &nbsp;
+                                        .badge-row
+                                            span.badge(class=`diff-${tour.difficulty}`)= tour.difficulty
+                                            span.badge= `${tour.duration} days`
+                                        h3.heading-tertirary= tour.name
+                                        .ridge
+                                            svg(viewBox='0 0 320 20' preserveAspectRatio='none')
+                                                path(fill='#FFFFFF' d='M0 20 L0 12 L16 6 L38 14 L62 3 L88 12 L112 5 L136 14 L162 7 L188 15 L214 5 L240 13 L266 4 L292 12 L320 8 L320 20 Z')
+                                    .card__details
+                                        p.card__text= tour.summary
+                                        .card__data
+                                            svg.card__icon
+                                                use(xlink:href='/img/icons.svg#icon-map-pin')
+                                            span= tour.startLocation ? tour.startLocation.description : 'Location TBA'
+                                        .card__data
+                                            svg.card__icon
+                                                use(xlink:href='/img/icons.svg#icon-calendar')
+                                            span= tour.startDates && tour.startDates.length ? tour.startDates[0].toLocaleString('en-us',{month:'long',year:'numeric'}) : 'Date TBA'
+                                        .card__data
+                                            svg.card__icon
+                                                use(xlink:href='/img/icons.svg#icon-flag')
+                                            span= `${tour.locations ? tour.locations.length : 0} Stops`
+                                        .card__data
+                                            svg.card__icon
+                                                use(xlink:href='/img/icons.svg#icon-user')
+                                            span= `${tour.maxGroupSize} People`
+                                        .card__footer
+                                            p
+                                                span.card__footer-value= `$${tour.price}`
+                                                span.card__footer-text per person
+                                            p.card__ratings
+                                                span.card__footer-value= tour.ratingsAverage
+                                                span.card__footer-text= `rating (${tour.ratingsQuantity})`
+                                            a.btn--small(href=`/tour/${tour.slug}`) Details
 
                 .no-results#noResults
                     h3 No trails match that search
