@@ -2586,3 +2586,34 @@ textarea.form__input {
   fill: var(--amber);
   flex-shrink: 0;
 }
+.btn--small {
+  position: relative;
+  overflow: hidden;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff !important;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.2s var(--easing);
+}
+.card:hover .btn--small {
+  background: var(--pine);
+}
+.btn--small:active {
+  transform: scale(0.95);
+}
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: scale(0);
+  animation: rippleEffect 0.6s var(--easing);
+  pointer-events: none;
+}
+@keyframes rippleEffect {
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}

@@ -34,7 +34,6 @@ block content
                     data-rating=tour.ratingsAverage
                     data-name=`${tour.name} ${tour.startLocation ? tour.startLocation.description : ''}`.toLowerCase()
                 )
-                    a(href=`/tour/${tour.slug}` style='display:contents')
                         .card__header
                             .card__picture
                                 - const isCloudinary = tour.imageCover && tour.imageCover.startsWith('http');

@@ -76,7 +76,7 @@ exports.getMyTours = catchAsync(async (req, res, next) => {
   const tours = await Tour.find({ _id: { $in: tourIDs } });
 
   // 3) Render template with isMyTours flag
-  res.status(200).render('overview', {
+  res.status(200).render('my-tours', {
     title: 'My Bookings',
     isMyTours: true,
     tours,
