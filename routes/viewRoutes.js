@@ -26,7 +26,12 @@ router.get('/about', viewController.getAbout);
 // --------------------------------------------------
 router.get('/tour/:slug', authController.protect, viewController.getTour);
 router.get('/me', authController.protect, viewController.getAccount);
-router.get('/my-tours', authController.protect, viewController.getMyTours);
+router.get(
+  '/my-tours',
+  authController.isLoggedIn, // للـ navbar/res.locals
+  authController.protect, // للتحقق ووضع req.user
+  viewController.getMyTours,
+);
 router.post(
   '/submit-user-data',
   authController.protect,

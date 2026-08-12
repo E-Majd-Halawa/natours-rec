@@ -1,0 +1,108 @@
+extends base
+
+mixin navItem(link, text, icon, active)
+  li(class=`${active ? 'side-nav--active' : ''}`)
+    a(href=`${link}`)
+      svg
+        use(xlink:href=`/img/icons.svg#icon-${icon}`)
+      | #{text}
+
+block content
+    main.main
+        .user-view
+            nav.user-view__menu
+                ul.side-nav
+                    +navItem('/me', 'Settings', 'settings', false)
+                    +navItem('/my-tours', 'My bookings', 'briefcase', true)
+                    +navItem('/my-reviews', 'My reviews', 'star', false)
+                    +navItem('/billing', 'Billing', 'credit-card', false)
+
+                if user && user.role === 'admin'
+                    .admin-nav
+                        h5.admin-nav__heading Admin
+                        ul.side-nav
+                            +navItem('/manage-tours', 'Manage tours', 'map', false)
+                            +navItem('/manage-users', 'Manage users', 'users', false)
+                            +navItem('/manage-reviews', 'Manage reviews', 'star', false)
+                            +navItem('/manage-bookings', 'Manage bookings', 'briefcase', false)
+                            +navItem('/manage-applications', 'Manage Applications', 'file-text', false)
+                            +navItem('/manage-contacts', 'Contact Messages', 'mail', false)
+
+            .user-view__content
+                .tour-controls
+                    .tour-controls__row
+                        .search-box
+                            svg(width='16' height='16' viewBox='0 0 24 24' fill='none')
+                                circle(cx='11' cy='11' r='7' stroke='currentColor' stroke-width='2')
+                                path(d='M21 21l-4.35-4.35' stroke='currentColor' stroke-width='2')
+                            input#searchInput(type='text' placeholder='Search a tour or destination…' aria-label='Search tours')
+                        .chip-row#chipRow
+                            button.chip.active(data-diff='all') All
+                            button.chip(data-diff='easy') Easy
+                            button.chip(data-diff='medium') Medium
+                            button.chip(data-diff='difficult') Difficult
+                        select.sort-select#sortSelect(aria-label='Sort tours')
+                            option(value='popular') Sort: Popular
+                            option(value='price-asc') Price: Low to High
+                            option(value='price-desc') Price: High to Low
+                            option(value='rating') Highest rated
+                    p.result-count#resultCount
+
+                .card-container#cardGrid
+                    each tour in tours
+                        .card(
+                            data-diff=tour.difficulty
+                            data-price=tour.price
+                            data-rating=tour.ratingsAverage
+                            data-name=`${tour.name} ${tour.startLocation ? tour.startLocation.description : ''}`.toLowerCase()
+                        )
+                            a.card__link(href=`/tour/${tour.slug}`)
+                                .card__header
+                                    .card__picture
+                                        - const isCloudinary = tour.imageCover && tour.imageCover.startsWith('http');
+                                        img.card__picture-img(
+                                          src= isCloudinary ? tour.imageCover : `/img/tours/${tour.imageCover}`, 
+                                          alt=tour.name, 
+                                          loading='lazy'
+                                        )
+                                        .card__picture-overlay &nbsp;
+                                    .badge-row
+                                        span.badge(class=`diff-${tour.difficulty}`)= tour.difficulty
+                                        span.badge= `${tour.duration} days`
+                                    h3.heading-tertirary= tour.name
+                                    .ridge
+                                        svg(viewBox='0 0 320 20' preserveAspectRatio='none')
+                                            path(fill='#FFFFFF' d='M0 20 L0 12 L16 6 L38 14 L62 3 L88 12 L112 5 L136 14 L162 7 L188 15 L214 5 L240 13 L266 4 L292 12 L320 8 L320 20 Z')
+                                .card__details
+                                    p.card__text= tour.summary
+                                    .card__data
+                                        svg.card__icon
+                                            use(xlink:href='/img/icons.svg#icon-map-pin')
+                                        span= tour.startLocation ? tour.startLocation.description : 'Location TBA'
+                                    .card__data
+                                        svg.card__icon
+                                            use(xlink:href='/img/icons.svg#icon-calendar')
+                                        span= tour.startDates && tour.startDates.length ? tour.startDates[0].toLocaleString('en-us',{month:'long',year:'numeric'}) : 'Date TBA'
+                                    .card__data
+                                        svg.card__icon
+                                            use(xlink:href='/img/icons.svg#icon-flag')
+                                        span= `${tour.locations ? tour.locations.length : 0} Stops`
+                                    .card__data
+                                        svg.card__icon
+                                            use(xlink:href='/img/icons.svg#icon-user')
+                                        span= `${tour.maxGroupSize} People`
+                                .card__footer
+                                    p
+                                        span.card__footer-value= `$${tour.price}`
+                                        span.card__footer-text per person
+                                    p.card__ratings
+                                        span.card__footer-value= tour.ratingsAverage
+                                        span.card__footer-text= `rating (${tour.ratingsQuantity})`
+                                    span.btn--small Details
+
+                .no-results#noResults
+                    h3 No trails match that search
+                    p Try a different destination or clear your filters.
+
+block append scripts
+    script(src='/js/tourFilter.js')

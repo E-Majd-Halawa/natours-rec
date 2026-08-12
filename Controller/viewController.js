@@ -56,18 +56,17 @@ exports.upDateUserData = catchAsync(async (req, res, next) => {
 });
 
 exports.getMyTours = catchAsync(async (req, res, next) => {
-  // 1) Find all bookings
+  // 1) جيب الحجوزات الخاصة بالمستخدم الحالي
   const bookings = await Booking.find({ user: req.user.id });
 
-  // 2) Find tours with the returned IDs
+  // 2) جيب الـ tours المرتبطة بهاي الحجوزات
   const tourIDs = bookings.map((el) => el.tour);
   const tours = await Tour.find({ _id: { $in: tourIDs } });
 
-  // 3) Render template with isMyTours flag
-  res.status(200).render('overview', {
+  res.status(200).render('my-tours', {
     title: 'My Bookings',
-    isMyTours: true,
     tours,
+    user: req.user, // مهم عشان يشتغل شرط user.role === 'admin' بالقائمة
   });
 });
 
