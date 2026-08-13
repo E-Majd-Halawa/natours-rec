@@ -20,7 +20,7 @@ router.get(
   viewController.getLoginForm,
 );
 router.get('/logout', authController.isLoggedIn, authController.logout);
-router.get('/about', isLoggedIn, viewController.getAbout);
+router.get('/about', authController.isLoggedIn, viewController.getAbout);
 // --------------------------------------------------
 // 2) Protected User Routes (مسارات المستخدمين المسجلين)
 // --------------------------------------------------
