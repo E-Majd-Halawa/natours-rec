@@ -6,41 +6,70 @@ const Tour = require('../Models/tourModel');
 
 const router = express.Router();
 
-// تنبيهات العامة
+// تنبيهات عامة (تُطبَّق على كل الراوتس تلقائياً)
 router.use(viewController.alerts);
 
-// --------------------------------------------------
-// 1) Public Routes (مسارات عامة)
-// --------------------------------------------------
+// ====================================================
+// 1) Public Routes (مسارات عامة - متاحة للجميع)
+// ====================================================
 router.get('/', authController.isLoggedIn, viewController.getOverview);
+
 router.get('/signup', authController.isLoggedIn, viewController.getSignupForm);
+
 router.get(
   '/loginForm',
   authController.isLoggedIn,
   viewController.getLoginForm,
 );
+
 router.get('/logout', authController.isLoggedIn, authController.logout);
+
 router.get('/about', authController.isLoggedIn, viewController.getAbout);
-// --------------------------------------------------
-// 2) Protected User Routes (مسارات المستخدمين المسجلين)
-// --------------------------------------------------
+
 router.get('/tour/:slug', authController.isLoggedIn, viewController.getTour);
+
+router.get(
+  '/download-apps',
+  authController.isLoggedIn,
+  viewController.getDownloadApps,
+);
+
+router.get(
+  '/become-a-guide',
+  authController.isLoggedIn,
+  viewController.getBecomeGuideForm,
+);
+
+// ====================================================
+// 2) Protected User Routes (تتطلب تسجيل دخول)
+// ====================================================
 router.get('/me', authController.protect, viewController.getAccount);
+
 router.get(
   '/my-tours',
   authController.isLoggedIn, // للـ navbar/res.locals
   authController.protect, // للتحقق ووضع req.user
   viewController.getMyTours,
 );
+
+router.get('/my-reviews', authController.protect, viewController.getMyReviews);
+
+router.get('/billing', authController.protect, viewController.getBilling);
+
 router.post(
   '/submit-user-data',
   authController.protect,
   viewController.upDateUserData,
 );
 
-// --------------------------------------------------
-// 3) Admin Only Routes (مسارات لوحة تحكم الأدمن)
-// --------------------------------------------------
+router
+  .route('/contact')
+  .get(authController.protect, viewController.getContactForm)
+  .post(authController.protect, viewController.sendContactMessage);
+
+// ====================================================
+// 3) Admin Only Routes (تتطلب صلاحية admin)
+// ====================================================
 router.get(
   '/manage-tours',
   authController.protect,
@@ -54,12 +83,14 @@ router.get(
   authController.restrictTo('admin'),
   viewController.getNewTourForm,
 );
+
 router.get(
   '/manage-tours/edit/:id',
   authController.protect,
   authController.restrictTo('admin'),
   viewController.getTourForm,
 );
+
 router.get(
   '/manage-users',
   authController.protect,
@@ -67,57 +98,39 @@ router.get(
   viewController.getManageUsers,
 );
 
-// مسار إدارة المراجعات المضاف حديثاً
 router.get(
   '/manage-reviews',
   authController.protect,
   authController.restrictTo('admin'),
   viewController.getManageReviews,
 );
+
 router.get(
   '/manage-bookings',
   authController.protect,
   authController.restrictTo('admin'),
   viewController.getManageBookings,
 );
-// إضافة مسار عرض صفحة Tbeome a guide
-router.get('/billing', authController.protect, viewController.getBilling);
-router.get('/my-reviews', authController.protect, viewController.getMyReviews);
-router.get(
-  '/become-a-guide',
-  authController.isLoggedIn,
-  viewController.getBecomeGuideForm,
-);
+
 router.get(
   '/manage-applications',
   authController.protect,
   authController.restrictTo('admin'),
   viewController.getManageApplications,
 );
-// أضف السطر التالي مع باقي الـ Routes التي تعرض صفحات Pug
-// عرض الصفحة
-router
-  .route('/contact')
-  .get(authController.protect, viewController.getContactForm)
-  .post(authController.protect, viewController.sendContactMessage);
-router.get(
-  '/download-apps',
-  authController.isLoggedIn,
-  viewController.getDownloadApps,
-);
+
 router.get(
   '/manage-contacts',
   authController.protect,
   authController.restrictTo('admin'),
   viewController.getManageContacts,
 );
-// routes/viewRoutes.js
 
-// مسار حذف الرسالة
 router.delete(
   '/manage-contacts/:id',
   authController.protect,
   authController.restrictTo('admin'),
   viewController.deleteContact,
 );
+
 module.exports = router;
