@@ -100,7 +100,11 @@ router
   .route('/contact')
   .get(authController.protect, viewController.getContactForm)
   .post(authController.protect, viewController.sendContactMessage);
-router.get('/download-apps', viewController.getDownloadApps);
+router.get(
+  '/download-apps',
+  authController.isLoggedIn,
+  viewController.getDownloadApps,
+);
 router.get(
   '/manage-contacts',
   authController.protect,
