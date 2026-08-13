@@ -12,56 +12,71 @@ block content
     .user-view
       nav.user-view__menu
         ul.side-nav
-          +navItem('/me', 'Settings', 'settings', false)
-          +navItem('/my-tours', 'My bookings', 'briefcase', false)
-          +navItem('#', 'My reviews', 'star', false)
-          +navItem('#', 'Billing', 'credit-card', false)
+          +navItem('/me', 'Settings', 'settings')
+          +navItem('/my-tours', 'My bookings', 'briefcase')
+          +navItem('/my-reviews', 'My reviews', 'star')
+          +navItem('/billing', 'Billing', 'credit-card')
 
         if user && user.role === 'admin'
           .admin-nav
             h5.admin-nav__heading Admin
             ul.side-nav
-              +navItem('/manage-tours', 'Manage tours', 'map', false)
-              +navItem('/manage-users', 'Manage users', 'users', false)
+              +navItem('/manage-tours', 'Manage tours', 'map')
+              +navItem('/manage-users', 'Manage users', 'users')
               +navItem('/manage-reviews', 'Manage reviews', 'star', true)
-              +navItem('/manage-bookings', 'Manage bookings', 'briefcase', false)
-              +navItem('/manage-applications', 'Manage Applications', 'file-text', false)
-              +navItem('/manage-contacts', 'Contact Messages', 'mail', false)
+              +navItem('/manage-bookings', 'Manage bookings', 'briefcase')
+              +navItem('/manage-applications', 'Manage Applications', 'file-text')
+              +navItem('/manage-contacts', 'Contact Messages', 'mail')
 
       .user-view__content
-        .user-view__form-container
-          h2.heading-secondary.ma-bt-md Manage Reviews
+        .billing-container
+          .billing-header
+            h2.heading-secondary Manage Reviews
+            p.billing-subtitle Monitor and moderate every review submitted across all tours.
 
-          if !reviews || reviews.length === 0
-            p.no-data No reviews found in the system.
-          else
-            table.table-reviews
-              thead
-                tr
-                  th User
-                  th Tour
-                  th Rating
-                  th Review
-                  th Date
-                  th Action
-              tbody
+          - const totalReviews = reviews ? reviews.length : 0
+          - const avgRating = reviews && reviews.length ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1) : '0.0'
+          - const lowRatedCount = reviews ? reviews.filter(r => r.rating <= 2).length : 0
+
+          .billing-metrics
+            .metric-box
+              span.metric-box__label Total Reviews
+              span.metric-box__value= totalReviews
+            .metric-box
+              span.metric-box__label Average Rating
+              span.metric-box__value= `${avgRating} ⭐`
+            .metric-box
+              span.metric-box__label Low Rated (≤2)
+              span.metric-box__value= lowRatedCount
+
+          .billing-section
+            h3.billing-section__title All Reviews
+
+            if !reviews || reviews.length === 0
+              p.form__hint No reviews found in the system.
+            else
+              .billing-list
                 each review in reviews
-                  tr(data-review-id=review.id)
-                    td.user-cell
-                      - const photo = review.user && review.user.photo ? review.user.photo : 'default.jpg'
-                      - const userPhoto = photo.startsWith('data:') ? photo : `/img/users/${photo}`
-                      img.user-cell__img(src=userPhoto, alt=review.user ? review.user.name : 'User')
-                      span= review.user ? review.user.name : 'Deleted User'
-                    
-                    td= review.tour ? review.tour.name : 'N/A'
-                    
-                    td
-                      span.rating-stars ⭐ #{review.rating}/5
-                    
-                    td.review-text-cell
-                      p.review-text= review.review
-                    
-                    td= new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                    
-                    td
-                      button.btn.btn--small.btn--danger.btn--delete-review(data-review-id=review.id) Delete
+                  - const photo = review.user && review.user.photo ? review.user.photo : 'default.jpg'
+                  - const userPhoto = photo.startsWith('data:') ? photo : `/img/users/${photo}`
+                  .review-row(data-review-id=review.id)
+                    .review-row__user
+                      img.review-row__avatar(src=userPhoto, alt=review.user ? review.user.name : 'User')
+                      .review-row__user-info
+                        h4.billing-row__title= review.user ? review.user.name : 'Deleted User'
+                        .billing-row__meta
+                          span= review.tour ? review.tour.name : 'N/A'
+                          span.meta-dot •
+                          span= new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+                    span.rating-badge= `${review.rating} ⭐`
+
+                    p.review-row__text= review.review
+
+                    button.btn-action.btn-action--delete.btn--delete-review(
+                      type='button',
+                      data-review-id=review.id
+                    ) Delete
+
+block append scripts
+  script(src='/js/manageReviews.js')

@@ -2617,3 +2617,52 @@ textarea.form__input {
     opacity: 0;
   }
 }
+/* ---------- Manage Reviews - matches billing list style ---------- */
+.review-row {
+  display: grid;
+  grid-template-columns: 2.5fr 0.8fr 2fr 1fr;
+  align-items: center;
+  gap: 1.6rem;
+  padding: 1.8rem 2.4rem;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.15s ease;
+}
+.review-row:last-child {
+  border-bottom: none;
+}
+.review-row:hover {
+  background-color: #f8fafc;
+}
+.review-row__user {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  min-width: 0;
+}
+.review-row__avatar {
+  width: 4.4rem;
+  height: 4.4rem;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+}
+.review-row__user-info {
+  min-width: 0;
+}
+.review-row__text {
+  font-size: 1.35rem;
+  color: #475569;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+@media (max-width: 900px) {
+  .review-row {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+}
