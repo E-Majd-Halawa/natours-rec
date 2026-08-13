@@ -20,11 +20,11 @@ router.get(
   viewController.getLoginForm,
 );
 router.get('/logout', authController.isLoggedIn, authController.logout);
-router.get('/about', viewController.getAbout);
+router.get('/about', isLoggedIn, viewController.getAbout);
 // --------------------------------------------------
 // 2) Protected User Routes (مسارات المستخدمين المسجلين)
 // --------------------------------------------------
-router.get('/tour/:slug', authController.protect, viewController.getTour);
+router.get('/tour/:slug', authController.isLoggedIn, viewController.getTour);
 router.get('/me', authController.protect, viewController.getAccount);
 router.get(
   '/my-tours',
